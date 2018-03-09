@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Esfa.Recruit.Employer.Web.Configuration;
 using Esfa.Recruit.Employer.Web.Orchestrators;
-using Esfa.Recruit.Employer.Web.Orchestrators.Part1;
 using Esfa.Recruit.Employer.Web.ViewModels.Location;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,8 +35,8 @@ namespace Esfa.Recruit.Employer.Web.Controllers.Part1
             }
 
             await _orchestrator.PostLocationEditModelAsync(m);
+
             return RedirectToRoute(RouteNames.ShortDescription_Get);
-        }
-        
+        }        
     }
 }

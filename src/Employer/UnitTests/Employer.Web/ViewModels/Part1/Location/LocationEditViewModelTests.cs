@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using Esfa.Recruit.Employer.Web.ViewModels.Location;
 using FluentAssertions;
 using Xunit;
@@ -13,6 +12,7 @@ namespace Esfa.Recruit.Employer.UnitTests.Employer.Web.ViewModels.Part1.Location
     {
         [Fact]
         public void ShouldErrorIfLocationEditModelIsInvalid()
+
         {
             var m = new LocationEditModel
             {

@@ -1,7 +1,6 @@
 ﻿using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Esfa.Recruit.Employer.Web.Extensions;
 using Esfa.Recruit.Employer.Web.ViewModels.Location;
@@ -65,7 +64,7 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
         public async Task PostLocationEditModelAsync(LocationEditModel m)
         {
             var vacancy = await _client.GetVacancyForEditAsync(m.VacancyId);
-
+            
             if (vacancy.Status != VacancyStatus.Draft)
                 throw new ConcurrencyException(string.Format(ErrorMessages.VacancyNotAvailableForEditing, vacancy.Title));
             
