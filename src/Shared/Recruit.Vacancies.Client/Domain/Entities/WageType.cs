@@ -4,7 +4,7 @@
     {
         FixedWage,
         NationalMinimumWageForApprentices,
-        NationalMinimumWage,        
+        NationalMinimumWage,
         Unspecified
     }
 }

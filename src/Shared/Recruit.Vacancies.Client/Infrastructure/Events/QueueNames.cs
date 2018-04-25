@@ -7,5 +7,6 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Events
         public const string EmployerDashboardQueueName = "generate-employer-dashboard-queue";
         public const string GenerateLiveVacanciesQueueName = "generate-live-vacancies-queue";
         public const string ApplicationSubmittedQueueName = "application-submitted-queue";
+        public const string VacancyIndexQueueName = "recruit-index-vacancy-queue";
     }
 }

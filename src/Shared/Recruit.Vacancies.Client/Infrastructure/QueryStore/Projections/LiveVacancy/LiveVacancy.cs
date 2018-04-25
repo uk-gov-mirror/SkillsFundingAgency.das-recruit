@@ -11,7 +11,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.Li
         }
 
         public Guid VacancyId { get; set; }
-        
+
         public string ApplicationInstructions { get; set; }
         public string ApplicationMethod { get; set; }
         public string ApplicationUrl { get; set; }
@@ -41,5 +41,8 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.Li
         public TrainingProvider TrainingProvider { get; set; }
         public long VacancyReference { get; set; }
         public Wage Wage { get; set; }
+
+
+        public string TrainingType => ProgrammeId.Contains("-") ? "Framework" : "Standard";
     }
 }

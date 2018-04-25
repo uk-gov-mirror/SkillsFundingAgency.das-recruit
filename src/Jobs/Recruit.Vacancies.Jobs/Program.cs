@@ -9,6 +9,8 @@ using Esfa.Recruit.Vacancies.Jobs.EditVacancyInfo;
 using Esfa.Recruit.Vacancies.Jobs.QaDashboard;
 using Esfa.Recruit.Vacancies.Jobs.LiveVacanciesGenerator;
 using Esfa.Recruit.Vacancies.Jobs.VacancyApplication;
+using Esfa.Recruit.Vacancies.Client.Infrastructure.Services;
+using Esfa.Recruit.Vacancies.Jobs.VacancyEtl;
 using Esfa.Recruit.Vacancies.Jobs.VacancyEvents;
 using Esfa.Recruit.Vacancies.Jobs.VacancyReviewEvents;
 using Esfa.Recruit.Vacancies.Jobs.VacancyStatus;
@@ -132,7 +134,7 @@ namespace Esfa.Recruit.Vacancies.Jobs
             // Setup dependencies
             services.AddSingleton<ILoggerFactory, LoggerFactory>();
             services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-            services.AddLogging((options) => 
+            services.AddLogging((options) =>
             {
                 options.AddConfiguration(configuration.GetSection("Logging"));
                 options.SetMinimumLevel(LogLevel.Trace);
@@ -145,9 +147,12 @@ namespace Esfa.Recruit.Vacancies.Jobs
             services.AddScoped<ApprenticeshipProgrammesUpdater>();
             services.AddScoped<EditVacancyInfoUpdater>();
             services.AddScoped<LiveVacancyStatusInspector>();
+
             services.AddScoped<EmployerDashboardCreator>();
             services.AddScoped<CreateApplicationReviewCommandHandler>();
             services.AddScoped<LiveVacanciesCreator>();
+            services.AddScoped<LiveVacancyIndexHandler>();
+            RegisterIndexerServices(services, configuration);
 
             services.AddSingleton<IApprenticeshipProgrammeApiClient, ApprenticeshipProgrammeApiClient>();
             services.AddApprentieshipsApi(configuration);
@@ -158,6 +163,7 @@ namespace Esfa.Recruit.Vacancies.Jobs
             services.AddScoped<VacancyReviewEventsJob>();
             services.AddScoped<ApprenticeshipProgrammesJob>();
             services.AddScoped<EditVacancyInfoJob>();
+
             services.AddScoped<VacancyStatusJob>();
             services.AddScoped<EmployerDashboardGeneratorJob>();
             services.AddScoped<VacancyApplicationJob>();
@@ -165,7 +171,15 @@ namespace Esfa.Recruit.Vacancies.Jobs
             services.AddScoped<BankHolidayJob>();
             services.AddScoped<QaDashboardJob>();
 
+            services.AddScoped<VacancyEtlJob>();
+
             return services;
+        }
+
+        private static void RegisterIndexerServices(IServiceCollection services, IConfiguration configuration)
+        {
+            var faaElasticSearchHost = configuration.GetValue<string>("FaaElasticSearchHost");
+            services.AddTransient<IIndexWriter<ApprenticeshipSummary>>(k => new ApprenticeshipSummaryIndexWriter(k.GetService<ILogger<ApprenticeshipSummaryIndexWriter>>(), faaElasticSearchHost));
         }
     }
 }

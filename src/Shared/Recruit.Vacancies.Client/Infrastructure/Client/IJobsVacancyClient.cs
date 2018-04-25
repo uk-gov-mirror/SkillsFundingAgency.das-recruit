@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Esfa.Recruit.Vacancies.Client.Domain.Entities;
+using Esfa.Recruit.Vacancies.Client.Infrastructure.Models;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.EditVacancyInfo;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.LiveVacancy;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Services.Models;
+using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 
 namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
 {
@@ -21,5 +22,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
         Task ApproveVacancy(long vacancyReference);
         Task ReferVacancy(long vacancyReference);
         Task CreateApplicationReviewAsync(Domain.Entities.Application application);
+        Task<IEnumerable<TrainingProgrammeCategory>> GetTrainingProgrammeCategories();
+        Task<IEnumerable<IApprenticeshipProgramme>> GetActiveApprenticeshipProgrammesAsync();
     }
 }
