@@ -9,6 +9,7 @@ using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Domain.Repositories;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Mappings;
+using Esfa.Recruit.Vacancies.Client.Infrastructure.Models;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.Employer;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.EditVacancyInfo;
@@ -16,6 +17,7 @@ using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.LiveVa
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.VacancyApplications;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.ReferenceData;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.ReferenceData.Entities;
+using Esfa.Recruit.Vacancies.Client.Infrastructure.Repositories;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Services;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Services.Models;
 
@@ -32,6 +34,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
         private readonly IEmployerAccountService _employerAccountService;
         private readonly IReferenceDataReader _referenceDataReader;
         private readonly IApplicationReviewRepository _applicationReviewRepository;
+        private readonly IReadRepository<TrainingProgrammeCategory, string> _categoriesProvider;
 
         public VacancyClient(
             IVacancyRepository repository,
@@ -42,7 +45,8 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             IApprenticeshipProgrammeProvider apprenticeshipProgrammesProvider,
             IEmployerAccountService employerAccountService,
             IReferenceDataReader referenceDataReader,
-            IApplicationReviewRepository applicationReviewRepository)
+            IApplicationReviewRepository applicationReviewRepository,
+            IReadRepository<TrainingProgrammeCategory, string> categoriesProvider)
         {
             _repository = repository;
             _reader = reader;
@@ -53,6 +57,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             _employerAccountService = employerAccountService;
             _referenceDataReader = referenceDataReader;
             _applicationReviewRepository = applicationReviewRepository;
+            _categoriesProvider = categoriesProvider;
         }
 
         public Task UpdateDraftVacancyAsync(Vacancy vacancy, VacancyUser user)
@@ -226,6 +231,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             return _writer.UpdateEmployerVacancyDataAsync(employerAccountId, legalEntities);
         }
 
+
         public async Task CreateVacancyReview(long vacancyReference)
         {
             var command = new CreateVacancyReviewCommand
@@ -286,6 +292,11 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             {
                 VacancyReference = vacancyReference
             });
+        }
+
+        public Task<IEnumerable<TrainingProgrammeCategory>> GetTrainingProgrammeCategories()
+        {
+            return _categoriesProvider.GetAllAsync();
         }
 
         // Shared

@@ -27,6 +27,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SFA.DAS.EAS.Account.Api.Client;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Slack;
+using Esfa.Recruit.Vacancies.Client.Infrastructure.Models;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -47,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             RegisterServiceDeps(services, configuration);
 
-            services.AddRepositories(configuration);
+            RegisterRepositoryDeps(services, configuration);
 
             RegisterStorageProviderDeps(services, configuration);
 
@@ -85,7 +86,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Configure<FaaConfiguration>(configuration.GetSection("FaaConfiguration"));
         }
 
-        private static void AddRepositories(this IServiceCollection services, IConfiguration configuration)
+        private static void RegisterRepositoryDeps(IServiceCollection services, IConfiguration configuration)
         {
             var mongoConnectionString = configuration.GetConnectionString("MongoDb");
             
@@ -99,6 +100,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<IVacancyReviewRepository, MongoDbVacancyReviewRepository>();
             services.AddTransient<IUserRepository, MongoDbUserRepository>();
             services.AddTransient<IApplicationReviewRepository, MongoDbApplicationReviewRepository>();
+            services.AddTransient<IReadRepository<TrainingProgrammeCategory, string>, MongoDbTrainingProgrammeCategoryRepository>();
 
             services.AddTransient<IQueryStore, MongoQueryStore>();
             services.AddTransient<IQueryStoreReader, QueryStoreClient>();
