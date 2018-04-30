@@ -12,7 +12,6 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Services.FAA
 {
     public class FaaService : IFaaService
     {
-        private const string Topic = "UpdateApprenticeshipApplicationStatus";
         private readonly FaaConfiguration _config;
 
         public FaaService(IOptions<FaaConfiguration> config)
@@ -22,7 +21,8 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Services.FAA
 
         public Task PublishApplicationStatusSummaryAsync(FaaApplicationStatusSummary message)
         {
-            var topicClient = new TopicClient(_config.StorageConnectionString, Topic, RetryPolicy.Default);
+			const string topic = "UpdateApprenticeshipApplicationStatus";
+			var topicClient = new TopicClient(_config.StorageConnectionString, topic, RetryPolicy.Default);
 
             var brokeredMessage = CreateBrokeredMessage(message);
 
