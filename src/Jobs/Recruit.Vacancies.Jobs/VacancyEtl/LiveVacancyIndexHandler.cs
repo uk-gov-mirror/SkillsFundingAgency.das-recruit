@@ -34,8 +34,13 @@ namespace Esfa.Recruit.Vacancies.Jobs.VacancyEtl
                                                     .ToList();
 
             _logger.LogInformation($"{summaries.Count} live vacancies to add to {indexName} index.");
-            
+            await IndexIndividually(indexName, summaries);
+        }
+
+        private Task IndexIndividually(string indexName, System.Collections.Generic.List<ApprenticeshipSummary> summaries)
+        {
             var indexTasks = summaries.Select(x => _indexWriter.IndexAsync(indexName, x));
+
             Task.WaitAll(indexTasks.ToArray());
 
             bool failedTasksCheck(Task<bool> t) => t.IsFaulted || t.Result == false;
@@ -49,7 +54,7 @@ namespace Esfa.Recruit.Vacancies.Jobs.VacancyEtl
                 _logger.LogInformation($"Successfully indexed {summaries.Count} vacancies.");
             }
 
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
     }
 }

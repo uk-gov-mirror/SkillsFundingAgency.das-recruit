@@ -16,6 +16,7 @@ namespace Esfa.Recruit.Vacancies.Jobs.VacancyEtl
         private readonly ILogger<ApprenticeshipSummaryIndexWriter> _logger;
         private readonly HttpClient _httpClient;
         private const string RequestMediaType = "application/json";
+        private const string ApprenticeshipDocumentTypeName = "apprenticeship";
         private static JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
@@ -41,43 +42,41 @@ namespace Esfa.Recruit.Vacancies.Jobs.VacancyEtl
 
             try
             {
-                var resp = await _httpClient.PostAsync($"{indexName}/apprenticeship/{item.Id}", content);
+                var requestUri = $"{indexName}/{ApprenticeshipDocumentTypeName}/{item.Id}";
+                var resp = await _httpClient.PostAsync(requestUri, content);
 
                 if (resp.IsSuccessStatusCode)
                 {
-                    _logger.LogDebug($"Successfully added vacancy {item.VacancyReference} {item.Title} to the {indexName} index.");
+                    _logger.LogDebug($"Successfully added vacancy '{item.VacancyReference} {item.Title}' to the '{indexName}' index.");
                     return true;
                 }
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogWarning($"Http error {ex.Message} when trying to add vacancy {item.VacancyReference} {item.Title} to the {indexName} index.");
+                _logger.LogWarning($"Http error {ex.Message} when trying to add vacancy '{item.VacancyReference} {item.Title}' to the '{indexName}' index.");
             }
             
             return false;
         }
 
-        //public async Task<bool> IndexBulkAsync(string indexName, IList<ApprenticeshipSummary> items)
-        //{
-        //    var docs = items.Select(x => JsonConvert.SerializeObject(x, _jsonSettings) + Environment.NewLine);
-            
+        public async Task<bool> IndexBulkAsync(string indexName, IList<ApprenticeshipSummary> items)
+        {
+            var actionDocs = items.Select(x => $"{{ \"index\" : {{ \"_index\" : \"{indexName}\", \"_type\" : \"{ApprenticeshipDocumentTypeName}\", \"_id\" : \"{x.Id}\" }} }}\n");
+            var docs = items.Select(x => JsonConvert.SerializeObject(x, _jsonSettings) + "\n");
+            var req = actionDocs.Zip(docs, (action, indexDoc) => string.Concat(action, indexDoc)).ToList();
 
-        //    //docs.Zip
+            try
+            {
+                var content = new StringContent(string.Join(string.Empty, req), Encoding.UTF8, RequestMediaType);
+                var resp = await _httpClient.PostAsync($"{indexName}/_bulk", content);
+                return resp.IsSuccessStatusCode;
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning($"Http error {ex.Message} when trying to bulk insert vacancies to the '{indexName}' index.");
+            }
 
-
-        //    //batch size control
-
-        //    var content = new StringContent(searchDocument, Encoding.UTF8, "application/json");
-        //    var res = await _httpClient.PostAsync(indexName, content);
-
-        //    if (res.IsSuccessStatusCode)
-        //    {
-        //        // debug log
-        //        return true;
-        //    }
-
-        //    // warning 
-        //    return false;
-        //}
+            return false;
+        }
     }
 }
