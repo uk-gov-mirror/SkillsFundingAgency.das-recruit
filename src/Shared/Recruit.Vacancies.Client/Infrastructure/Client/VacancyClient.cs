@@ -17,7 +17,6 @@ using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.LiveVa
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.VacancyApplications;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.ReferenceData;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.ReferenceData.Entities;
-using Esfa.Recruit.Vacancies.Client.Infrastructure.Repositories;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Services;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Services.Models;
 
@@ -34,7 +33,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
         private readonly IEmployerAccountService _employerAccountService;
         private readonly IReferenceDataReader _referenceDataReader;
         private readonly IApplicationReviewRepository _applicationReviewRepository;
-        private readonly IReadRepository<TrainingProgrammeCategory, string> _categoriesProvider;
+        private readonly IReferenceDataProvider<TrainingProgrammeCategory, string> _categoriesProvider;
 
         public VacancyClient(
             IVacancyRepository repository,
@@ -46,7 +45,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             IEmployerAccountService employerAccountService,
             IReferenceDataReader referenceDataReader,
             IApplicationReviewRepository applicationReviewRepository,
-            IReadRepository<TrainingProgrammeCategory, string> categoriesProvider)
+            IReferenceDataProvider<TrainingProgrammeCategory, string> categoriesProvider)
         {
             _repository = repository;
             _reader = reader;

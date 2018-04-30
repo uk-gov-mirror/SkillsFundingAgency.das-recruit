@@ -6,14 +6,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Repositories
+namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Services
 {
-    internal sealed class MongoDbTrainingProgrammeCategoryRepository : MongoDbCollectionBase, IReadRepository<TrainingProgrammeCategory, string>
+    internal sealed class TrainingProgrammeCategoryProvider : MongoDbCollectionBase, IReferenceDataProvider<TrainingProgrammeCategory, string>
     {
         private const string Database = "recruit";
         private const string Collection = "trainingProgrammeCategories";
-
-        public MongoDbTrainingProgrammeCategoryRepository(ILogger<MongoDbTrainingProgrammeCategoryRepository> logger, IOptions<MongoDbConnectionDetails> details) 
+        public TrainingProgrammeCategoryProvider(ILogger<TrainingProgrammeCategoryProvider> logger, IOptions<MongoDbConnectionDetails> details)
             : base(logger, Database, Collection, details)
         {
         }

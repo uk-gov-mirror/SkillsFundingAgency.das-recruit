@@ -92,11 +92,6 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore
         {
             return _queryStore.UpsertAsync(vacancy);
         }
-        
-        public Task<IEnumerable<LiveVacancy>> GetLiveVacancies()
-        {
-            return _queryStore.GetAllByTypeAsync<LiveVacancy>(QueryViewType.LiveVacancy.TypeName);
-        }
 
         public Task DeleteLiveVacancyAsync(long vacancyReference)
         {
@@ -117,6 +112,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore
             return _queryStore.UpsertAsync(vacancyApplications);
         }
 
+
         public Task<QaDashboard> GetQaDashboardAsync()
         {
             var key = QueryViewType.QaDashboard.GetIdValue();
@@ -130,6 +126,10 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore
             qaDashboard.LastUpdated = _timeProvider.Now;
 
             return _queryStore.UpsertAsync(qaDashboard);
+        }
+        public Task<IEnumerable<LiveVacancy>> GetLiveVacancies()
+        {
+            return _queryStore.GetAllByTypeAsync<LiveVacancy>(QueryViewType.LiveVacancy.TypeName);
         }
 
         private string GetLiveVacancyId(long vacancyReference)
