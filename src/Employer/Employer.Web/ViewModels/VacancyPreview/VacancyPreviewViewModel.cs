@@ -78,4 +78,3 @@ namespace Esfa.Recruit.Employer.Web.ViewModels.VacancyPreview
         Invalid
     }
 }
-

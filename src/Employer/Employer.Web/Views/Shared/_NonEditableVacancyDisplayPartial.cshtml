@@ -82,7 +82,7 @@
         <p class="preserve-format">@Html.Raw(string.Join("<br />", Model.Qualifications))</p>
     </div>
     <div class="column-half">
-        <h3 class="heading-small">Things to consider</h3>
+        <h3 asp-condition="@Model.CanShowThingsToConsiderHeading" class="heading-small">Things to consider</h3>
         <p>@Model.ThingsToConsider</p>
     </div>
 </div>
@@ -108,7 +108,7 @@
         <p>@Model.EmployerWebsiteUrl</p>
     </div>
     <div class="column-one-third">
-        <h3 class="heading-small">Contact</h3>
+        <h3 asp-condition="@Model.CanShowContactDetailsHeading" class="heading-small">Contact</h3>
         <p>@Model.ContactName</p>
         <p>@Model.ContactEmail</p>
         <p>@Model.ContactTelephone</p>
