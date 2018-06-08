@@ -4,6 +4,7 @@ using Esfa.Recruit.Employer.Web.Orchestrators;
 using Esfa.Recruit.Employer.Web.Orchestrators.Part1;
 using Esfa.Recruit.Employer.Web.Orchestrators.Part2;
 using Esfa.Recruit.Employer.Web.Services;
+using Esfa.Recruit.Shared.Configuration;
 using Esfa.Recruit.Shared.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +24,8 @@ namespace Esfa.Recruit.Employer.Web.Configuration
             services.Configure<ManageApprenticeshipsRoutes>(configuration.GetSection("ManageApprenticeshipsRoutes"));
             services.AddSingleton<ManageApprenticeshipsLinkHelper>();
             services.Configure<AuthenticationConfiguration>(configuration.GetSection("Authentication"));
+
+            services.AddFeatureToggle();
 
             RegisterProviderApiClientDep(services, configuration);
 
