@@ -5,7 +5,7 @@ using ErrMsg = Esfa.Recruit.Employer.Web.ViewModels.ValidationMessages.TitleVali
 
 namespace Esfa.Recruit.Employer.Web.ViewModels.Part1.Title
 {
-    public class TitleEditModel
+    public class TitleEditModel : Part1FormModel
     {
         [FromRoute]
         public string EmployerAccountId { get; set; }

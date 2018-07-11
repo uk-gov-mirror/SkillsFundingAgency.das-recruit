@@ -40,13 +40,13 @@
     </div>
 </div>
 
-<div class="grid-row">
+<div class="grid-row" id="@PreviewAnchors.TitlePart1Section">
     <div class="column-two-thirds">
         <h2 class="heading-xlarge small-bottom-margin">
             @Model.Title
             <span class="heading-secondary">@Model.EmployerName</span>
         </h2>
-        <a esfa-automation="link-employer-name" asp-route="@RouteNames.Title_Get">Edit</a>
+        <a esfa-automation="link-employer-name" asp-route="@RouteNames.Title_Get" asp-route-returnSection="@PreviewAnchors.TitlePart1Section">Edit</a>
     </div>
 </div>
 
@@ -284,7 +284,7 @@
         <div class="@GetSectionClass(Model.TrainingSectionState)">
             <h3 class="heading-small">Apprenticeship @Model.TrainingType</h3>
             <p asp-condition="@Model.HasTrainingTitle">@Model.TrainingTitle</p>
-            @EditLink(RouteNames.Title_Get, Model.TrainingSectionState, "link-standard")
+            @EditLink(RouteNames.Training_Get, Model.TrainingSectionState, "link-standard")
         </div>
     </div>
 </div>
