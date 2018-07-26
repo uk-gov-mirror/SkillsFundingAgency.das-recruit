@@ -1,5 +1,6 @@
 ﻿using Esfa.Recruit.Employer.Web.Views;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Esfa.Recruit.Employer.Web.ViewModels.Part2.Qualifications
 {
@@ -8,7 +9,12 @@ namespace Esfa.Recruit.Employer.Web.ViewModels.Part2.Qualifications
         public string Title { get; internal set; }
 
         public List<string> QualificationTypes { get; set; }
-        public static string PreviewSectionAnchor => PreviewAnchors.RequirementsAndProspectsSection;
+
+		public bool HasUnsavedQualifications { get; internal set; }
+
+		public bool HasQualifications => Qualifications.Any();
+
+		public static string PreviewSectionAnchor => PreviewAnchors.RequirementsAndProspectsSection;
         public IList<string> OrderedFieldNames => new List<string>
         {
             nameof(QualificationsEditModel.QualificationType),
@@ -16,6 +22,5 @@ namespace Esfa.Recruit.Employer.Web.ViewModels.Part2.Qualifications
             nameof(QualificationsEditModel.Grade),
             nameof(QualificationsEditModel.Weighting)
         };
-    }
-    
+	}
 }

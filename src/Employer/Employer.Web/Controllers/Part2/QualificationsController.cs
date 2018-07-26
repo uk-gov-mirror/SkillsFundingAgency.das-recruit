@@ -63,6 +63,7 @@ namespace Esfa.Recruit.Employer.Web.Controllers.Part2
             {
                 var tempDataQualifications = TempData.Get<List<QualificationEditModel>>(TempDataKeys.Qualifications);
                 vm.Qualifications = tempDataQualifications;
+				vm.HasUnsavedQualifications = true;
             }
         }
     }
