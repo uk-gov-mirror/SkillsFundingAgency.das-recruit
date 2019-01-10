@@ -63,7 +63,6 @@ namespace Esfa.Recruit.Qa.Web
                 }
             );
 
-            services.AddApplicationInsightsTelemetry(_configuration); // may need to remove
             services.AddAuthenticationService(_authenticationConfig);
             services.AddAuthorizationService(_legacyAuthorizationConfig, _authorizationConfig);
 
