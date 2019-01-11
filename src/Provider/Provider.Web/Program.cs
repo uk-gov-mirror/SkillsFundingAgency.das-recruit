@@ -37,6 +37,7 @@ namespace Esfa.Recruit.Provider.Web
         private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .ConfigureKestrel(c => c.AddServerHeader = false)
+                .UseApplicationInsights()
                 .UseStartup<Startup>()
                 .UseUrls("https://localhost:5030")
                 .UseNLog()

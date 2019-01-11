@@ -42,8 +42,6 @@ namespace Esfa.Recruit.Provider.Web
 
             services.AddMvcService(_hostingEnvironment, _loggerFactory);
 
-            services.AddApplicationInsightsTelemetry(_configuration);
-
             //A service provider for resolving services configured in IoC
             var sp = services.BuildServiceProvider();
 

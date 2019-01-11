@@ -51,8 +51,6 @@ namespace Esfa.Recruit.Employer.Web
 
             services.AddMvcService(_hostingEnvironment, _isAuthEnabled, _loggerFactory);
 
-            services.AddApplicationInsightsTelemetry(_configuration);
-
             if (_isAuthEnabled)
             {
                 //A service provider for resolving services configured in IoC
