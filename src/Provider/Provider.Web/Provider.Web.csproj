@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <UserSecretsId>recruit-provider-web</UserSecretsId>
     <RootNamespace>Esfa.Recruit.Provider.Web</RootNamespace>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyName>Esfa.Recruit.Provider.Web</AssemblyName>

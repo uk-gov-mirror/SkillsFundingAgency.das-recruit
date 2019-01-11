@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <UserSecretsId>recruit-qa-web</UserSecretsId>
     <RootNamespace>Esfa.Recruit.Qa.Web</RootNamespace>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyName>Esfa.Recruit.Qa.Web</AssemblyName>
