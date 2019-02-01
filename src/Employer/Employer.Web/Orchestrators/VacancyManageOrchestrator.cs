@@ -12,6 +12,8 @@ using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.Vacanc
 using Esfa.Recruit.Vacancies.Client.Domain.Extensions;
 using Esfa.Recruit.Shared.Web.Orchestrators;
 using Esfa.Recruit.Shared.Web.Extensions;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Employer.Web.Orchestrators
 {
@@ -21,12 +23,19 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
         private readonly DisplayVacancyViewModelMapper _vacancyDisplayMapper;
         private readonly IEmployerVacancyClient _client;
         private readonly IRecruitVacancyClient _vacancyClient;
+        private readonly IMessaging _messaging;
 
-        public VacancyManageOrchestrator(ILogger<VacancyManageOrchestrator> logger, DisplayVacancyViewModelMapper vacancyDisplayMapper, IEmployerVacancyClient client, IRecruitVacancyClient vacancyClient) : base(logger)
+        public VacancyManageOrchestrator(
+            ILogger<VacancyManageOrchestrator> logger, 
+            DisplayVacancyViewModelMapper vacancyDisplayMapper, 
+            IEmployerVacancyClient client, 
+            IRecruitVacancyClient vacancyClient,
+            IMessaging messaging) : base(logger)
         {
             _vacancyDisplayMapper = vacancyDisplayMapper;
             _client = client;
             _vacancyClient = vacancyClient;
+            _messaging = messaging;
         }
 
         public async Task<Vacancy> GetVacancy(VacancyRouteModel vrm)
@@ -91,7 +100,11 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
             return await ValidateAndExecute(
                 vacancy, 
                 v => _vacancyClient.Validate(v, ValdationRules),
-                v => _client.UpdatePublishedVacancyAsync(vacancy, user)
+                v => _messaging.SendCommandAsync(new UpdateLiveVacancyCommand
+                    {
+                        Vacancy = vacancy,
+                        User = user
+                    })
             );
         }
 

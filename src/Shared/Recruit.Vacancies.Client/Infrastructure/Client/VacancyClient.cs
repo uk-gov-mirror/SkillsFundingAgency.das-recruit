@@ -91,41 +91,41 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
         //     return _messaging.SendCommandAsync(command);
         // }
 
-        public Task UpdatePublishedVacancyAsync(Vacancy vacancy, VacancyUser user)
-        {
-            var command = new UpdateLiveVacancyCommand
-            {
-                Vacancy = vacancy,
-                User = user
-            };
+        // public Task UpdatePublishedVacancyAsync(Vacancy vacancy, VacancyUser user)
+        // {
+        //     var command = new UpdateLiveVacancyCommand
+        //     {
+        //         Vacancy = vacancy,
+        //         User = user
+        //     };
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
         public Task<Vacancy> GetVacancyAsync(Guid vacancyId)
         {
             return _repository.GetVacancyAsync(vacancyId);
         }
 
-        public async Task<Guid> CreateVacancyAsync(string title, int numberOfPositions, string employerAccountId, VacancyUser user)
-        {
-            var vacancyId = GenerateVacancyId();
+        // public async Task<Guid> CreateVacancyAsync(string title, int numberOfPositions, string employerAccountId, VacancyUser user)
+        // {
+        //     var vacancyId = GenerateVacancyId();
 
-            var command = new CreateEmployerOwnedVacancyCommand
-            {
-                VacancyId = vacancyId,
-                User = user,
-                UserType = UserType.Employer,
-                Title = title,
-                NumberOfPositions = numberOfPositions,
-                EmployerAccountId = employerAccountId,
-                Origin = SourceOrigin.EmployerWeb
-            };
+        //     var command = new CreateEmployerOwnedVacancyCommand
+        //     {
+        //         VacancyId = vacancyId,
+        //         User = user,
+        //         UserType = UserType.Employer,
+        //         Title = title,
+        //         NumberOfPositions = numberOfPositions,
+        //         EmployerAccountId = employerAccountId,
+        //         Origin = SourceOrigin.EmployerWeb
+        //     };
 
-            await _messaging.SendCommandAsync(command);
+        //     await _messaging.SendCommandAsync(command);
 
-            return vacancyId;
-        }
+        //     return vacancyId;
+        // }
 
         public async Task<Guid> CloneVacancyAsync(Guid vacancyId, VacancyUser user, SourceOrigin sourceOrigin)
         {
