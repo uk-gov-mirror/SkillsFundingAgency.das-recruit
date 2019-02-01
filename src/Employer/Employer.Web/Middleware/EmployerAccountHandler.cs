@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Esfa.Recruit.Employer.Web.Configuration;
 using Esfa.Recruit.Employer.Web.Configuration.Routing;
 using Esfa.Recruit.Employer.Web.Extensions;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -16,11 +18,16 @@ namespace Esfa.Recruit.Employer.Web.Middleware
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IEmployerVacancyClient _client;
+        private readonly IMessaging _messaging;
 
-        public EmployerAccountHandler(IHostingEnvironment hostingEnvironment, IEmployerVacancyClient client)
+        public EmployerAccountHandler(
+            IHostingEnvironment hostingEnvironment, 
+            IEmployerVacancyClient client,
+            IMessaging messaging)
         {
             _hostingEnvironment = hostingEnvironment;
             _client = client;
+            _messaging = messaging;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, EmployerAccountRequirement requirement)
@@ -54,7 +61,11 @@ namespace Esfa.Recruit.Employer.Web.Middleware
 
             if (context.Request.Cookies[key] == null)
             {
-                await _client.SetupEmployerAsync(employerAccountId);
+                await _messaging.SendCommandAsync(new SetupEmployerCommand
+                {
+                    EmployerAccountId = employerAccountId
+                });
+
                 context.Response.Cookies.Append(key, "1", EsfaCookieOptions.GetDefaultHttpCookieOption(_hostingEnvironment));
             }
         }

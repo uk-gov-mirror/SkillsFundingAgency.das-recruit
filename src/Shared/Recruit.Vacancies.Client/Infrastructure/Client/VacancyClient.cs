@@ -143,28 +143,28 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             return Guid.NewGuid();
         }
 
-        public Task SubmitVacancyAsync(Guid vacancyId, string employerDescription, VacancyUser user)
-        {
-            var command = new SubmitVacancyCommand
-            {
-                VacancyId = vacancyId,
-                EmployerDescription = employerDescription,
-                User = user
-            };
+        // public Task SubmitVacancyAsync(Guid vacancyId, string employerDescription, VacancyUser user)
+        // {
+        //     var command = new SubmitVacancyCommand
+        //     {
+        //         VacancyId = vacancyId,
+        //         EmployerDescription = employerDescription,
+        //         User = user
+        //     };
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
-        public Task DeleteVacancyAsync(Guid vacancyId, VacancyUser user)
-        {
-            var command = new DeleteVacancyCommand
-            {
-                VacancyId = vacancyId,
-                User = user
-            };
+        // public Task DeleteVacancyAsync(Guid vacancyId, VacancyUser user)
+        // {
+        //     var command = new DeleteVacancyCommand
+        //     {
+        //         VacancyId = vacancyId,
+        //         User = user
+        //     };
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
         public Task<EmployerDashboard> GetDashboardAsync(string employerAccountId)
         {
@@ -176,22 +176,22 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             return _employerDashboardService.ReBuildDashboardAsync(employerAccountId);
         }
 
-        public Task UserSignedInAsync(VacancyUser user, UserType userType)
-        {
-            var command = new UserSignedInCommand(user, userType);
+        // public Task UserSignedInAsync(VacancyUser user, UserType userType)
+        // {
+        //     var command = new UserSignedInCommand(user, userType);
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
-        public Task SetupEmployerAsync(string employerAccountId)
-        {
-            var command = new SetupEmployerCommand
-            {
-                EmployerAccountId = employerAccountId
-            };
+        // public Task SetupEmployerAsync(string employerAccountId)
+        // {
+        //     var command = new SetupEmployerCommand
+        //     {
+        //         EmployerAccountId = employerAccountId
+        //     };
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
         public Task<EditVacancyInfo> GetEditVacancyInfoAsync(string employerAccountId)
         {

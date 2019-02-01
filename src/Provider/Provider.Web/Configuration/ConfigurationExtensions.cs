@@ -22,6 +22,8 @@ using System.Threading.Tasks;
 using Esfa.Recruit.Provider.Web.Extensions;
 using System.Security.Claims;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Provider.Web.Configuration
 {
@@ -78,7 +80,7 @@ namespace Esfa.Recruit.Provider.Web.Configuration
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
-        public static void AddAuthenticationService(this IServiceCollection services, AuthenticationConfiguration authConfig, IRecruitVacancyClient vacancyClient, IHostingEnvironment hostingEnvironment)
+        public static void AddAuthenticationService(this IServiceCollection services, AuthenticationConfiguration authConfig, IMessaging messaging, IHostingEnvironment hostingEnvironment)
         {
             services.AddAuthentication(sharedOptions =>
             {
@@ -97,7 +99,7 @@ namespace Esfa.Recruit.Provider.Web.Configuration
 
                 options.Events.OnSecurityTokenValidated = async (ctx) =>
                 {
-                    await HandleUserSignedIn(ctx, vacancyClient);
+                    await HandleUserSignedIn(ctx, messaging);
                 };
 
             })
@@ -111,10 +113,11 @@ namespace Esfa.Recruit.Provider.Web.Configuration
             });
         }
 
-        private static async Task HandleUserSignedIn(Microsoft.AspNetCore.Authentication.WsFederation.SecurityTokenValidatedContext ctx, IRecruitVacancyClient vacancyClient)
+        private static Task HandleUserSignedIn(Microsoft.AspNetCore.Authentication.WsFederation.SecurityTokenValidatedContext ctx, IMessaging messaging)
         {
             var user = ctx.Principal.ToVacancyUser();
-            await vacancyClient.UserSignedInAsync(user, UserType.Provider);
+
+            return messaging.SendCommandAsync(new UserSignedInCommand(user, UserType.Provider));
         }
     }
 }

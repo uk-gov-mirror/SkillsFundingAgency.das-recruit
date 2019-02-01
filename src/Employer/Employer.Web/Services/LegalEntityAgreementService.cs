@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.EditVacancyInfo;
 
@@ -8,10 +10,12 @@ namespace Esfa.Recruit.Employer.Web.Services
     public class LegalEntityAgreementService : ILegalEntityAgreementService
     {
         private readonly IEmployerVacancyClient _client;
+        private readonly IMessaging _messaging;
 
-        public LegalEntityAgreementService(IEmployerVacancyClient client)
+        public LegalEntityAgreementService(IEmployerVacancyClient client, IMessaging messaging)
         {
             _client = client;
+            _messaging = messaging;
         }
 
         public async Task<bool> HasLegalEntityAgreementAsync(string employerAccountId, long legalEntityId)
@@ -29,7 +33,10 @@ namespace Esfa.Recruit.Employer.Web.Services
 
             if (hasLegalEntityAgreement)
             {
-                await _client.SetupEmployerAsync(employerAccountId);
+                await _messaging.SendCommandAsync(new SetupEmployerCommand
+                {
+                    EmployerAccountId = employerAccountId
+                });
             }
 
             return hasLegalEntityAgreement;

@@ -17,8 +17,8 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
         //Task<Guid> CloneVacancyAsync(Guid vacancyId, VacancyUser user, SourceOrigin sourceOrigin);
         
         //Task UpdatePublishedVacancyAsync(Vacancy vacancy, VacancyUser user);
-        Task SubmitVacancyAsync(Guid vacancyId, string employerDescription, VacancyUser user);
-        Task DeleteVacancyAsync(Guid vacancyId, VacancyUser user);
+        //Task SubmitVacancyAsync(Guid vacancyId, string employerDescription, VacancyUser user);
+        //Task DeleteVacancyAsync(Guid vacancyId, VacancyUser user);
         Task<EmployerDashboard> GetDashboardAsync(string employerAccountId);
         Task<EditVacancyInfo> GetEditVacancyInfoAsync(string employerAccountId);
         
@@ -26,7 +26,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
         Task<IApprenticeshipProgramme> GetApprenticeshipProgrammeAsync(string programmeId);
         Task<IEnumerable<LegalEntity>> GetEmployerLegalEntitiesAsync(string employerAccountId);
         Task<IEnumerable<string>> GetEmployerIdentifiersAsync(string userId);
-        Task SetupEmployerAsync(string employerAccountId);
+        //Task SetupEmployerAsync(string employerAccountId);
         Task<EmployerProfile> GetEmployerProfileAsync(string employerAccountId, long legalEntityId);
         Task UpdateEmployerProfileAsync(EmployerProfile employerProfile, VacancyUser user);
         

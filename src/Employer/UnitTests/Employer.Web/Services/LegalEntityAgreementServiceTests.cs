@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Esfa.Recruit.Employer.Web.Services;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.EditVacancyInfo;
 using FluentAssertions;
@@ -16,6 +18,7 @@ namespace Esfa.Recruit.Employer.UnitTests.Employer.Web.Services
         const long LegalEntityId = 1234;
 
         private Mock<IEmployerVacancyClient> _clientMock;
+        private Mock<IMessaging> _messagingMock;
 
         [Fact]
         public void HasLegalEntityAgreementAsync_ShouldReturnFalseIfNoMatchingLegalEntity()
@@ -47,7 +50,7 @@ namespace Esfa.Recruit.Employer.UnitTests.Employer.Web.Services
 
             result.Should().BeTrue();
             _clientMock.Verify(c => c.GetEmployerLegalEntitiesAsync(EmployerAccountId), Times.Once);
-            _clientMock.Verify(c => c.SetupEmployerAsync(EmployerAccountId), Times.Once);
+            _messagingMock.Verify(c => c.SendCommandAsync(It.Is<SetupEmployerCommand>(a => a.EmployerAccountId == EmployerAccountId)), Times.Once);
         }
 
         [Fact] public void HasLegalEntityAgreementAsync_ShouldReturnFalseWhenEmployerServiceLegalEntityHasNoAgreement()
@@ -58,7 +61,7 @@ namespace Esfa.Recruit.Employer.UnitTests.Employer.Web.Services
 
             result.Should().BeFalse();
             _clientMock.Verify(c => c.GetEmployerLegalEntitiesAsync(EmployerAccountId), Times.Once);
-            _clientMock.Verify(c => c.SetupEmployerAsync(EmployerAccountId), Times.Never);
+            _messagingMock.Verify(c => c.SendCommandAsync(It.Is<SetupEmployerCommand>(a => a.EmployerAccountId == EmployerAccountId)), Times.Never);
         }
 
         [Fact]
@@ -70,7 +73,7 @@ namespace Esfa.Recruit.Employer.UnitTests.Employer.Web.Services
 
             result.Should().BeFalse();
             _clientMock.Verify(c => c.GetEmployerLegalEntitiesAsync(EmployerAccountId), Times.Once);
-            _clientMock.Verify(c => c.SetupEmployerAsync(EmployerAccountId), Times.Never);
+            _messagingMock.Verify(c => c.SendCommandAsync(It.Is<SetupEmployerCommand>(a => a.EmployerAccountId == EmployerAccountId)), Times.Never);
         }
 
         private LegalEntityAgreementService GetLegalEntityAgreementService(string employerAccountId, long legalEntityId, bool hasLegalEntityAgreement, long employerServiceLegalEntityId, bool employerServiceHasLegalEntityAgreement)
@@ -96,7 +99,10 @@ namespace Esfa.Recruit.Employer.UnitTests.Employer.Web.Services
                 }
                 .AsEnumerable()));
 
-            return new LegalEntityAgreementService(_clientMock.Object);
+            _messagingMock = new Mock<IMessaging>();
+            _messagingMock.Setup(x => x.SendCommandAsync(It.IsAny<SetupEmployerCommand>())).Returns(Task.CompletedTask);
+
+            return new LegalEntityAgreementService(_clientMock.Object, _messagingMock.Object);
         }
     }
 }

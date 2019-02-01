@@ -10,9 +10,11 @@ using Esfa.Recruit.Employer.Web.ViewModels.Preview;
 using Esfa.Recruit.Employer.Web.ViewModels.VacancyPreview;
 using Esfa.Recruit.Shared.Web.Orchestrators;
 using Esfa.Recruit.Shared.Web.Services;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
 using Esfa.Recruit.Vacancies.Client.Application.Validation;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 using Esfa.Recruit.Vacancies.Client.Domain.Exceptions;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Microsoft.Extensions.Logging;
 using ErrMsg = Esfa.Recruit.Shared.Web.ViewModels.ErrorMessages;
@@ -27,6 +29,7 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
         private readonly DisplayVacancyViewModelMapper _vacancyDisplayMapper;
         private readonly IReviewSummaryService _reviewSummaryService;
         private readonly ILegalEntityAgreementService _legalEntityAgreementService;
+        private readonly IMessaging _messaging;
 
         public VacancyPreviewOrchestrator(
             IEmployerVacancyClient client,
@@ -34,13 +37,15 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
             ILogger<VacancyPreviewOrchestrator> logger,
             DisplayVacancyViewModelMapper vacancyDisplayMapper, 
             IReviewSummaryService reviewSummaryService, 
-            ILegalEntityAgreementService legalEntityAgreementService) : base(logger)
+            ILegalEntityAgreementService legalEntityAgreementService,
+            IMessaging messaging) : base(logger)
         {
             _client = client;
             _vacancyClient = vacancyClient;
             _vacancyDisplayMapper = vacancyDisplayMapper;
             _reviewSummaryService = reviewSummaryService;
             _legalEntityAgreementService = legalEntityAgreementService;
+            _messaging = messaging;
         }
 
         public async Task<VacancyPreviewViewModel> GetVacancyPreviewViewModelAsync(VacancyRouteModel vrm)
@@ -98,7 +103,12 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
             if (response.HasLegalEntityAgreement == false)
                 return response;
 
-            await _client.SubmitVacancyAsync(vacancy.Id, vacancy.EmployerDescription, user);
+            await _messaging.SendCommandAsync(new SubmitVacancyCommand
+            {
+                VacancyId = vacancy.Id,
+                EmployerDescription = vacancy.EmployerDescription,
+                User = user
+            });
 
             response.IsSubmitted = true;
 

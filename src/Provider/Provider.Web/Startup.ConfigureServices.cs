@@ -1,4 +1,5 @@
 using Esfa.Recruit.Provider.Web.Configuration;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -48,7 +49,7 @@ namespace Esfa.Recruit.Provider.Web
             //A service provider for resolving services configured in IoC
             var sp = services.BuildServiceProvider();
 
-            services.AddAuthenticationService(_authConfig, sp.GetService<IRecruitVacancyClient>(), sp.GetService<IHostingEnvironment>());
+            services.AddAuthenticationService(_authConfig, sp.GetService<IMessaging>(), sp.GetService<IHostingEnvironment>());
             services.AddAuthorizationService();
         }
     }

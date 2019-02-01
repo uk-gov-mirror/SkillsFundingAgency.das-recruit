@@ -6,6 +6,8 @@ using Esfa.Recruit.Employer.Web.ViewModels;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 using Esfa.Recruit.Employer.Web.RouteModel;
 using Esfa.Recruit.Shared.Web.ViewModels;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Employer.Web.Orchestrators
 {
@@ -13,11 +15,16 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
     {
         private readonly IEmployerVacancyClient _client;
         private readonly IRecruitVacancyClient _vacancyClient;
+        private readonly IMessaging _messaging;
 
-        public DeleteVacancyOrchestrator(IEmployerVacancyClient client, IRecruitVacancyClient vacancyClient)
+        public DeleteVacancyOrchestrator(
+            IEmployerVacancyClient client, 
+            IRecruitVacancyClient vacancyClient,
+            IMessaging messaging)
         {
             _client = client;
             _vacancyClient = vacancyClient;
+            _messaging = messaging;
         }
 
         public async Task<DeleteViewModel> GetDeleteViewModelAsync(VacancyRouteModel vrm)
@@ -46,7 +53,11 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
             if (!vacancy.CanDelete)
                 throw new InvalidStateException(string.Format(ErrorMessages.VacancyNotAvailableForEditing, vacancy.Title));
 
-            await _client.DeleteVacancyAsync(vacancy.Id, user);
+            await _messaging.SendCommandAsync(new DeleteVacancyCommand
+            {
+                VacancyId = vacancy.Id,
+                User = user
+            });
         }
     }
 }
