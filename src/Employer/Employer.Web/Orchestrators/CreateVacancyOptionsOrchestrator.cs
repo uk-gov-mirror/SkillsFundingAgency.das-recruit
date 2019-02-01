@@ -8,6 +8,8 @@ using Esfa.Recruit.Shared.Web.Extensions;
 using System.Linq;
 using System;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Employer.Web.Orchestrators
 {
@@ -15,11 +17,16 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
     {
         private readonly IEmployerVacancyClient _client;
         private readonly IRecruitVacancyClient _vacancyClient;
+        private readonly IMessaging _messaging;
 
-        public CreateVacancyOptionsOrchestrator(IEmployerVacancyClient client, IRecruitVacancyClient vacancyClient)
+        public CreateVacancyOptionsOrchestrator(
+            IEmployerVacancyClient client, 
+            IRecruitVacancyClient vacancyClient,
+            IMessaging messaging)
         {
             _client = client;
             _vacancyClient = vacancyClient;
+            _messaging = messaging;
         }
 
         public async Task<CreateVacancyOptionsViewModel> GetCreateOptionsViewModelAsync(string employerAccountId)
@@ -36,7 +43,9 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
 
             Utility.CheckAuthorisedAccess(vacancy, employerAccountId);
 
-            var clonedVacancyId = await _client.CloneVacancyAsync(vacancyId, user, SourceOrigin.EmployerWeb);
+            var clonedVacancyId = Guid.NewGuid();
+            
+            await _messaging.SendCommandAsync(new CloneVacancyCommand(cloneVacancyId: vacancyId, newVacancyId: clonedVacancyId, user: user, sourceOrigin: SourceOrigin.EmployerWeb));
 
             return clonedVacancyId;
         }

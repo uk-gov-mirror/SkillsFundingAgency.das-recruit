@@ -127,16 +127,16 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
         //     return vacancyId;
         // }
 
-        public async Task<Guid> CloneVacancyAsync(Guid vacancyId, VacancyUser user, SourceOrigin sourceOrigin)
-        {
-            var newVacancyId = GenerateVacancyId();
+        // public async Task<Guid> CloneVacancyAsync(Guid vacancyId, VacancyUser user, SourceOrigin sourceOrigin)
+        // {
+        //     var newVacancyId = GenerateVacancyId();
 
-            var command = new CloneVacancyCommand(cloneVacancyId: vacancyId, newVacancyId: newVacancyId, user: user, sourceOrigin: sourceOrigin);
+        //     var command = new CloneVacancyCommand(cloneVacancyId: vacancyId, newVacancyId: newVacancyId, user: user, sourceOrigin: sourceOrigin);
 
-            await _messaging.SendCommandAsync(command);
+        //     await _messaging.SendCommandAsync(command);
 
-            return newVacancyId;
-        }
+        //     return newVacancyId;
+        // }
         
         private Guid GenerateVacancyId()
         {
