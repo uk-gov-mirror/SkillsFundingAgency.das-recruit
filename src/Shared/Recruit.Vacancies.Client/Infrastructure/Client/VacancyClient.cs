@@ -80,16 +80,16 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             _trainingProviderService = trainingProviderService;
         }
 
-        public Task UpdateDraftVacancyAsync(Vacancy vacancy, VacancyUser user)
-        {
-            var command = new UpdateDraftVacancyCommand
-            {
-                Vacancy = vacancy,
-                User = user
-            };
+        // public Task UpdateDraftVacancyAsync(Vacancy vacancy, VacancyUser user)
+        // {
+        //     var command = new UpdateDraftVacancyCommand
+        //     {
+        //         Vacancy = vacancy,
+        //         User = user
+        //     };
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
         public Task UpdatePublishedVacancyAsync(Vacancy vacancy, VacancyUser user)
         {

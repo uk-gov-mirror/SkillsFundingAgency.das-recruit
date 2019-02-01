@@ -11,6 +11,8 @@ using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.EditVacancyInfo;
 using Microsoft.Extensions.Logging;
 using Esfa.Recruit.Vacancies.Client.Application.Validation;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Provider.Web.Orchestrators.Part1
 {
@@ -19,12 +21,17 @@ namespace Esfa.Recruit.Provider.Web.Orchestrators.Part1
         private const VacancyRuleSet ValidationRules = VacancyRuleSet.EmployerName | VacancyRuleSet.EmployerAddress;
         private readonly IProviderVacancyClient _providerVacancyClient;
         private readonly IRecruitVacancyClient _recruitVacancyClient;
-        public LocationOrchestrator(IProviderVacancyClient providerVacancyClient, 
-            IRecruitVacancyClient recruitVacancyClient, ILogger<LocationOrchestrator> logger)
-            : base(logger)
+        private readonly IMessaging _messaging;
+
+        public LocationOrchestrator(
+            IProviderVacancyClient providerVacancyClient, 
+            IRecruitVacancyClient recruitVacancyClient, 
+            ILogger<LocationOrchestrator> logger,
+            IMessaging messaging) : base(logger)
         {
             _providerVacancyClient = providerVacancyClient;
             _recruitVacancyClient = recruitVacancyClient;
+            _messaging = messaging;
         }
         public async Task<LocationViewModel> GetLocationViewModelAsync(VacancyRouteModel vrm, long ukprn)
         {
@@ -103,7 +110,11 @@ namespace Esfa.Recruit.Provider.Web.Orchestrators.Part1
             return await ValidateAndExecute(
                 vacancy, 
                 v => _recruitVacancyClient.Validate(v, ValidationRules),
-                v => _recruitVacancyClient.UpdateDraftVacancyAsync(vacancy, user));
+                v => _messaging.SendCommandAsync(new UpdateDraftVacancyCommand
+                    {
+                        Vacancy = vacancy,
+                        User = user
+                    }));
         }
 
         protected override EntityToViewModelPropertyMappings<Vacancy, LocationEditModel> DefineMappings()

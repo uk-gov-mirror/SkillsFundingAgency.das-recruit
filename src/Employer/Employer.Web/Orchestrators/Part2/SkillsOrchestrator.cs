@@ -9,8 +9,10 @@ using Esfa.Recruit.Shared.Web.Extensions;
 using Esfa.Recruit.Shared.Web.Orchestrators;
 using Esfa.Recruit.Shared.Web.Services;
 using Esfa.Recruit.Shared.Web.ViewModels.Skills;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
 using Esfa.Recruit.Vacancies.Client.Application.Validation;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Microsoft.Extensions.Logging;
 
@@ -22,13 +24,20 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators.Part2
         private readonly IEmployerVacancyClient _client;
         private readonly IRecruitVacancyClient _vacancyClient;
         private readonly IReviewSummaryService _reviewSummaryService;
+        private readonly IMessaging _messaging;
         private readonly SkillsOrchestratorHelper _skillsHelper;
 
-        public SkillsOrchestrator(IEmployerVacancyClient client, IRecruitVacancyClient vacancyClient, ILogger<SkillsOrchestrator> logger, IReviewSummaryService reviewSummaryService) : base(logger)
+        public SkillsOrchestrator(
+            IEmployerVacancyClient client, 
+            IRecruitVacancyClient vacancyClient, 
+            ILogger<SkillsOrchestrator> logger, 
+            IReviewSummaryService reviewSummaryService,
+            IMessaging messaging) : base(logger)
         {
             _client = client;
             _vacancyClient = vacancyClient;
             _reviewSummaryService = reviewSummaryService;
+            _messaging = messaging;
             _skillsHelper = new SkillsOrchestratorHelper(() => vacancyClient.GetCandidateSkillsAsync().Result);
         }
         
@@ -91,7 +100,16 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators.Part2
                     SyncErrorsAndModel(result.Errors, m, vacancy);
                     return result;
                 },
-                v => validateOnly ? Task.CompletedTask : _vacancyClient.UpdateDraftVacancyAsync(v, user));
+                v => validateOnly ? Task.CompletedTask : UpdateVacancy(user, vacancy));
+        }
+
+        private Task UpdateVacancy(VacancyUser user, Vacancy vacancy)
+        {
+            return _messaging.SendCommandAsync(new UpdateDraftVacancyCommand
+            {
+                Vacancy = vacancy,
+                User = user
+            });
         }
 
         protected override EntityToViewModelPropertyMappings<Vacancy, SkillsEditModel> DefineMappings()

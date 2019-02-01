@@ -7,6 +7,7 @@ using Esfa.Recruit.Provider.Web.RouteModel;
 using Esfa.Recruit.Shared.Web.Services;
 using Esfa.Recruit.Shared.Web.ViewModels.Skills;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,6 @@ namespace Esfa.Recruit.Provider.UnitTests.Provider.Web.Orchestrators.Part2
         private const long TestUkprn = 12345678;
         private readonly Mock<IProviderVacancyClient> _mockClient;
         private readonly Mock<IRecruitVacancyClient> _mockVacancyClient;
-
         private readonly SkillsOrchestrator _orchestrator;
         private readonly Vacancy _testVacancy;
         private readonly VacancyRouteModel _testRouteModel = new VacancyRouteModel { Ukprn = TestUkprn, VacancyId = Guid.NewGuid() };
@@ -31,7 +31,7 @@ namespace Esfa.Recruit.Provider.UnitTests.Provider.Web.Orchestrators.Part2
             var candidateSkills = GetBaseSkills();
             _mockClient = new Mock<IProviderVacancyClient>();
             _mockVacancyClient = new Mock<IRecruitVacancyClient>();
-            _orchestrator = new SkillsOrchestrator(_mockClient.Object, _mockVacancyClient.Object, mockLogger.Object, Mock.Of<IReviewSummaryService>());
+            _orchestrator = new SkillsOrchestrator(_mockClient.Object, _mockVacancyClient.Object, mockLogger.Object, Mock.Of<IReviewSummaryService>(), Mock.Of<IMessaging>());
             _testVacancy = GetTestVacancy();
 
             _mockVacancyClient.Setup(x => x.GetCandidateSkillsAsync()).ReturnsAsync(candidateSkills);

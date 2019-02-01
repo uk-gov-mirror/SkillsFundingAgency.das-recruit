@@ -7,9 +7,11 @@ using Esfa.Recruit.Employer.Web.ViewModels.Part1.Training;
 using Esfa.Recruit.Shared.Web.Extensions;
 using Esfa.Recruit.Shared.Web.Orchestrators;
 using Esfa.Recruit.Shared.Web.Services;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
 using Esfa.Recruit.Vacancies.Client.Application.Providers;
 using Esfa.Recruit.Vacancies.Client.Application.Validation;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Microsoft.Extensions.Logging;
 
@@ -22,13 +24,21 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators.Part1
         private readonly IRecruitVacancyClient _vacancyClient;
         private readonly ITimeProvider _timeProvider;
         private readonly IReviewSummaryService _reviewSummaryService;
+        private readonly IMessaging _messaging;
 
-        public TrainingOrchestrator(IEmployerVacancyClient client, IRecruitVacancyClient vacancyClient, ILogger<TrainingOrchestrator> logger, ITimeProvider timeProvider, IReviewSummaryService reviewSummaryService) : base(logger)
+        public TrainingOrchestrator(
+            IEmployerVacancyClient client, 
+            IRecruitVacancyClient vacancyClient, 
+            ILogger<TrainingOrchestrator> logger, 
+            ITimeProvider timeProvider, 
+            IReviewSummaryService reviewSummaryService,
+            IMessaging messaging) : base(logger)
         {
             _client = client;
             _vacancyClient = vacancyClient;
             _timeProvider = timeProvider;
             _reviewSummaryService = reviewSummaryService;
+            _messaging = messaging;
         }
         
         public async Task<TrainingViewModel> GetTrainingViewModelAsync(VacancyRouteModel vrm)
@@ -105,7 +115,11 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators.Part1
             return await ValidateAndExecute(
                 vacancy, 
                 v => _vacancyClient.Validate(v, ValdationRules),
-                v => _vacancyClient.UpdateDraftVacancyAsync(vacancy, user)
+                v => _messaging.SendCommandAsync(new UpdateDraftVacancyCommand
+                    {
+                        Vacancy = vacancy,
+                        User = user
+                    })
             );
         }
 

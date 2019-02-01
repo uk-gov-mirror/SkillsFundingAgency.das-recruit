@@ -7,6 +7,7 @@ using Esfa.Recruit.Employer.Web.RouteModel;
 using Esfa.Recruit.Employer.Web.Services;
 using Esfa.Recruit.Shared.Web.Services;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.ReferenceData.Skills;
 using FluentAssertions;
@@ -32,7 +33,7 @@ namespace Esfa.Recruit.Employer.UnitTests.Employer.Web.Orchestrators.Part2
             var candidateSkills = GetBaseSkills();
             _mockClient = new Mock<IEmployerVacancyClient>();
             _mockVacancyClient = new Mock<IRecruitVacancyClient>();
-            _orchestrator = new SkillsOrchestrator(_mockClient.Object, _mockVacancyClient.Object, mockLogger.Object, Mock.Of<IReviewSummaryService>());
+            _orchestrator = new SkillsOrchestrator(_mockClient.Object, _mockVacancyClient.Object, mockLogger.Object, Mock.Of<IReviewSummaryService>(), Mock.Of<IMessaging>());
             _testVacancy = GetTestVacancy();
 
             _mockVacancyClient.Setup(x => x.GetCandidateSkillsAsync()).ReturnsAsync(candidateSkills);

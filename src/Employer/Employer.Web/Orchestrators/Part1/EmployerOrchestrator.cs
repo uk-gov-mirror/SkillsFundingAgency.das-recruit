@@ -10,8 +10,10 @@ using Esfa.Recruit.Employer.Web.ViewModels.Part1.Employer;
 using Esfa.Recruit.Shared.Web.Extensions;
 using Esfa.Recruit.Shared.Web.Orchestrators;
 using Esfa.Recruit.Shared.Web.Services;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
 using Esfa.Recruit.Vacancies.Client.Application.Validation;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.EditVacancyInfo;
 using Microsoft.Extensions.Logging;
@@ -25,18 +27,21 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators.Part1
         private readonly IRecruitVacancyClient _vacancyClient;
         private readonly IReviewSummaryService _reviewSummaryService;
         private readonly ILegalEntityAgreementService _legalEntityAgreementService;
+        private readonly IMessaging _messaging;
 
         public EmployerOrchestrator(
             IEmployerVacancyClient client,
             IRecruitVacancyClient vacancyClient,
             ILogger<EmployerOrchestrator> logger, 
             IReviewSummaryService reviewSummaryService, 
-            ILegalEntityAgreementService legalEntityAgreementService) : base(logger)
+            ILegalEntityAgreementService legalEntityAgreementService,
+            IMessaging messaging) : base(logger)
         {
             _client = client;
             _vacancyClient = vacancyClient;
             _reviewSummaryService = reviewSummaryService;
             _legalEntityAgreementService = legalEntityAgreementService;
+            _messaging = messaging;
         }
 
         public async Task<EmployerViewModel> GetEmployerViewModelAsync(VacancyRouteModel vrm)
@@ -127,7 +132,11 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators.Part1
                 v => _vacancyClient.Validate(v, ValidationRules),
                 async v => 
                 {
-                    await _vacancyClient.UpdateDraftVacancyAsync(vacancy, user);
+                    await _messaging.SendCommandAsync(new UpdateDraftVacancyCommand
+                    {
+                        Vacancy = vacancy,
+                        User = user
+                    });
 
                     return new PostEmployerEditModelResponse
                     {

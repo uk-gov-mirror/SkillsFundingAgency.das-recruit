@@ -12,6 +12,8 @@ using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Microsoft.Extensions.Logging;
 using Esfa.Recruit.Shared.Web.ViewModels;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Employer.Web.Orchestrators
 {
@@ -21,12 +23,19 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
         private readonly IEmployerVacancyClient _client;
         private readonly IRecruitVacancyClient _vacancyClient;
         private readonly IReviewSummaryService _reviewSummaryService;
+        private readonly IMessaging _messaging;
 
-        public TitleOrchestrator(IEmployerVacancyClient client, IRecruitVacancyClient vacancyClient, ILogger<TitleOrchestrator> logger, IReviewSummaryService reviewSummaryService) : base(logger)
+        public TitleOrchestrator(
+            IEmployerVacancyClient client, 
+            IRecruitVacancyClient vacancyClient, 
+            ILogger<TitleOrchestrator> logger, 
+            IReviewSummaryService reviewSummaryService,
+            IMessaging messaging) : base(logger)
         {
             _client = client;
             _vacancyClient = vacancyClient;
             _reviewSummaryService = reviewSummaryService;
+            _messaging = messaging;
         }
 
         public TitleViewModel GetTitleViewModel()
@@ -109,7 +118,11 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
                 v => _vacancyClient.Validate(v, ValidationRules),
                 async v =>
                 {
-                    await _vacancyClient.UpdateDraftVacancyAsync(vacancy, user);
+                    await _messaging.SendCommandAsync(new UpdateDraftVacancyCommand
+                    {
+                        Vacancy = vacancy,
+                        User = user
+                    });
                     return v.Id;
                 }
             );
