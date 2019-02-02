@@ -238,173 +238,173 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             return _reader.GetVacancyApplicationsAsync(vacancyReference);
         }
 
-        public Task SetApplicationReviewSuccessful(Guid applicationReviewId, VacancyUser user)
-        {
-            var command = new ApplicationReviewSuccessfulCommand
-            {
-                ApplicationReviewId = applicationReviewId,
-                User = user
-            };
+        // public Task SetApplicationReviewSuccessful(Guid applicationReviewId, VacancyUser user)
+        // {
+        //     var command = new ApplicationReviewSuccessfulCommand
+        //     {
+        //         ApplicationReviewId = applicationReviewId,
+        //         User = user
+        //     };
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
-        public Task SetApplicationReviewUnsuccessful(Guid applicationReviewId, string candidateFeedback, VacancyUser user)
-        {
-            var command = new ApplicationReviewUnsuccessfulCommand
-            {
-                ApplicationReviewId = applicationReviewId,
-                CandidateFeedback = candidateFeedback,
-                User = user
-            };
+        // public Task SetApplicationReviewUnsuccessful(Guid applicationReviewId, string candidateFeedback, VacancyUser user)
+        // {
+        //     var command = new ApplicationReviewUnsuccessfulCommand
+        //     {
+        //         ApplicationReviewId = applicationReviewId,
+        //         CandidateFeedback = candidateFeedback,
+        //         User = user
+        //     };
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
         public Task<EmployerProfile> GetEmployerProfileAsync(string employerAccountId, long legalEntityId)
         {
             return _employerProfileRepository.GetAsync(employerAccountId, legalEntityId);
         }
 
-        public Task UpdateEmployerProfileAsync(EmployerProfile employerProfile, VacancyUser user)
-        {
-            var command = new UpdateEmployerProfileCommand
-            {
-                Profile = employerProfile,
-                User = user
-            };
+        // public Task UpdateEmployerProfileAsync(EmployerProfile employerProfile, VacancyUser user)
+        // {
+        //     var command = new UpdateEmployerProfileCommand
+        //     {
+        //         Profile = employerProfile,
+        //         User = user
+        //     };
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
         // Jobs
-        public Task AssignVacancyNumber(Guid vacancyId)
-        {
-            var command = new AssignVacancyNumberCommand
-            {
-                VacancyId = vacancyId
-            };
+        // public Task AssignVacancyNumber(Guid vacancyId)
+        // {
+        //     var command = new AssignVacancyNumberCommand
+        //     {
+        //         VacancyId = vacancyId
+        //     };
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
-        public Task PatchTrainingProviderAsync(Guid vacancyId)
-        {
-            var command = new PatchVacancyTrainingProviderCommand(vacancyId);
+        // public Task PatchTrainingProviderAsync(Guid vacancyId)
+        // {
+        //     var command = new PatchVacancyTrainingProviderCommand(vacancyId);
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
-        public Task UpdateApprenticeshipProgrammesAsync()
-        {
-            var command = new UpdateApprenticeshipProgrammesCommand();
+        // public Task UpdateApprenticeshipProgrammesAsync()
+        // {
+        //     var command = new UpdateApprenticeshipProgrammesCommand();
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
-        public Task UpdateBankHolidaysAsync()
-        {
-            var command = new UpdateBankHolidaysCommand();
+        // public Task UpdateBankHolidaysAsync()
+        // {
+        //     var command = new UpdateBankHolidaysCommand();
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
 
-        public async Task CreateVacancyReview(long vacancyReference)
-        {
-            var command = new CreateVacancyReviewCommand
-            {
-                VacancyReference = vacancyReference
-            };
+        // public async Task CreateVacancyReview(long vacancyReference)
+        // {
+        //     var command = new CreateVacancyReviewCommand
+        //     {
+        //         VacancyReference = vacancyReference
+        //     };
 
-            await _messaging.SendCommandAsync(command);
-        }
+        //     await _messaging.SendCommandAsync(command);
+        // }
 
         public Task<IEnumerable<LiveVacancy>> GetLiveVacancies()
         {
             return _reader.GetLiveVacancies();
         }
 
-        public async Task CloseVacancyAsync(Guid vacancyId, VacancyUser user)
-        {
-            var command = new CloseVacancyCommand
-            {
-                VacancyId = vacancyId,
-                User = user
-            };
+        // public async Task CloseVacancyAsync(Guid vacancyId, VacancyUser user)
+        // {
+        //     var command = new CloseVacancyCommand
+        //     {
+        //         VacancyId = vacancyId,
+        //         User = user
+        //     };
 
-            await _messaging.SendCommandAsync(command);
-        }
+        //     await _messaging.SendCommandAsync(command);
+        // }
 
-        public async Task CloseExpiredVacancies()
-        {
-            var command = new CloseExpiredVacanciesCommand();
+        // public async Task CloseExpiredVacancies()
+        // {
+        //     var command = new CloseExpiredVacanciesCommand();
 
-            await _messaging.SendCommandAsync(command);
-        }
+        //     await _messaging.SendCommandAsync(command);
+        // }
 
-        public async Task EnsureVacancyIsGeocodedAsync(Guid vacancyId)
-        {
-            var vacancy = await _repository.GetVacancyAsync(vacancyId);
+        // public async Task EnsureVacancyIsGeocodedAsync(Guid vacancyId)
+        // {
+        //     var vacancy = await _repository.GetVacancyAsync(vacancyId);
 
-            if (!string.IsNullOrEmpty(vacancy?.EmployerLocation?.Postcode) &&
-                vacancy.EmployerLocation?.HasGeocode == false)
-            {
-                await GeocodeVacancyAsync(vacancy.Id);
-            }
-        }
+        //     if (!string.IsNullOrEmpty(vacancy?.EmployerLocation?.Postcode) &&
+        //         vacancy.EmployerLocation?.HasGeocode == false)
+        //     {
+        //         await GeocodeVacancyAsync(vacancy.Id);
+        //     }
+        // }
 
-        private async Task GeocodeVacancyAsync(Guid vacancyId)
-        {
-            var command = new GeocodeVacancyCommand()
-            {
-                VacancyId = vacancyId
-            };
+        // private async Task GeocodeVacancyAsync(Guid vacancyId)
+        // {
+        //     var command = new GeocodeVacancyCommand()
+        //     {
+        //         VacancyId = vacancyId
+        //     };
 
-            await _messaging.SendCommandAsync(command);
-        }
+        //     await _messaging.SendCommandAsync(command);
+        // }
 
-        public async Task ApproveVacancy(long vacancyReference)
-        {
-            await _messaging.SendCommandAsync(new ApproveVacancyCommand
-            {
-                VacancyReference = vacancyReference
-            });
-        }
+        // public async Task ApproveVacancy(long vacancyReference)
+        // {
+        //     await _messaging.SendCommandAsync(new ApproveVacancyCommand
+        //     {
+        //         VacancyReference = vacancyReference
+        //     });
+        // }
 
-        public Task ReferVacancy(long vacancyReference)
-        {
-            return _messaging.SendCommandAsync(new ReferVacancyCommand
-            {
-                VacancyReference = vacancyReference
-            });
-        }
+        // public Task ReferVacancy(long vacancyReference)
+        // {
+        //     return _messaging.SendCommandAsync(new ReferVacancyCommand
+        //     {
+        //         VacancyReference = vacancyReference
+        //     });
+        // }
 
         public Task<IEnumerable<LegalEntity>> GetEmployerLegalEntitiesAsync(string employerAccountId)
         {
             return _employerAccountProvider.GetEmployerLegalEntitiesAsync(employerAccountId);
         }
 
-        public Task CreateApplicationReviewAsync(Domain.Entities.Application application)
-        {
-            return _messaging.SendCommandAsync(new CreateApplicationReviewCommand { Application = application });
-        }
+        // public Task CreateApplicationReviewAsync(Domain.Entities.Application application)
+        // {
+        //     return _messaging.SendCommandAsync(new CreateApplicationReviewCommand { Application = application });
+        // }
 
-        public Task WithdrawApplicationAsync(long vacancyReference, Guid candidateId)
-        {
-            return _messaging.SendCommandAsync(new WithdrawApplicationCommand
-            {
-                VacancyReference = vacancyReference,
-                CandidateId = candidateId
-            });
-        }
+        // public Task WithdrawApplicationAsync(long vacancyReference, Guid candidateId)
+        // {
+        //     return _messaging.SendCommandAsync(new WithdrawApplicationCommand
+        //     {
+        //         VacancyReference = vacancyReference,
+        //         CandidateId = candidateId
+        //     });
+        // }
 
-        public Task HardDeleteApplicationReviewsForCandidate(Guid candidateId)
-        {
-            return _messaging.SendCommandAsync(new DeleteApplicationReviewsCommand
-            {
-                CandidateId = candidateId
-            });
-        }
+        // public Task HardDeleteApplicationReviewsForCandidate(Guid candidateId)
+        // {
+        //     return _messaging.SendCommandAsync(new DeleteApplicationReviewsCommand
+        //     {
+        //         CandidateId = candidateId
+        //     });
+        // }
 
         public Task PerformRulesCheckAsync(Guid reviewId)
         {
@@ -416,27 +416,27 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             return _vacancyReviewQuery.GetCurrentReferredVacancyReviewAsync(vacancyReference);
         }
 
-        public Task RefreshEmployerProfiles(string employerAccountId, IEnumerable<long> legalEntityIds)
-        {
-            return _messaging.SendCommandAsync(new RefreshEmployerProfilesCommand
-            {
-                EmployerAccountId = employerAccountId,
-                LegalEntityIds = legalEntityIds
-            });
-        }
+        // public Task RefreshEmployerProfiles(string employerAccountId, IEnumerable<long> legalEntityIds)
+        // {
+        //     return _messaging.SendCommandAsync(new RefreshEmployerProfilesCommand
+        //     {
+        //         EmployerAccountId = employerAccountId,
+        //         LegalEntityIds = legalEntityIds
+        //     });
+        // }
         public Task<User> GetUsersDetailsAsync(string userId)
         {
             return _userRepository.GetAsync(userId);
         }
 
-        public Task SaveLevyDeclarationAsync(string userId, string employerAccountId)
-        {
-            return _messaging.SendCommandAsync(new SaveUserLevyDeclarationCommand
-            {
-                UserId = userId,
-                EmployerAccountId = employerAccountId
-            });
-        }
+        // public Task SaveLevyDeclarationAsync(string userId, string employerAccountId)
+        // {
+        //     return _messaging.SendCommandAsync(new SaveUserLevyDeclarationCommand
+        //     {
+        //         UserId = userId,
+        //         EmployerAccountId = employerAccountId
+        //     });
+        // }
 
         public Task<bool> GetTrainingProviderExistsAsync(long ukprn)
         {

@@ -7,6 +7,8 @@ using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Microsoft.AspNetCore.Mvc;
 using Esfa.Recruit.Shared.Web.ViewModels.ApplicationReview;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Employer.Web.Orchestrators
 {
@@ -14,9 +16,11 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
     {
         private readonly IEmployerVacancyClient _client;
         private readonly IRecruitVacancyClient _vacancyClient;
+        private readonly IMessaging _messaging;
 
-        public ApplicationReviewOrchestrator(IEmployerVacancyClient client, IRecruitVacancyClient vacancyClient)
+        public ApplicationReviewOrchestrator(IEmployerVacancyClient client, IRecruitVacancyClient vacancyClient, IMessaging messaging)
         {
+            _messaging = messaging;
             _client = client;
             _vacancyClient = vacancyClient;
         }
@@ -33,7 +37,7 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
 
         public async Task<ApplicationReviewViewModel> GetApplicationReviewViewModelAsync(ApplicationReviewEditModel m)
         {
-            var vm = await GetApplicationReviewViewModelAsync((ApplicationReviewRouteModel) m);
+            var vm = await GetApplicationReviewViewModelAsync((ApplicationReviewRouteModel)m);
 
             vm.Outcome = m.Outcome;
             vm.CandidateFeedback = m.CandidateFeedback;
@@ -46,9 +50,18 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
             switch (m.Outcome.Value)
             {
                 case ApplicationReviewStatus.Successful:
-                    return _client.SetApplicationReviewSuccessful(m.ApplicationReviewId, user);
+                    return _messaging.SendCommandAsync(new ApplicationReviewSuccessfulCommand
+                    {
+                        ApplicationReviewId = m.ApplicationReviewId,
+                        User = user
+                    });
                 case ApplicationReviewStatus.Unsuccessful:
-                    return _client.SetApplicationReviewUnsuccessful(m.ApplicationReviewId, m.CandidateFeedback, user);
+                    return _messaging.SendCommandAsync(new ApplicationReviewUnsuccessfulCommand
+                    {
+                        ApplicationReviewId = m.ApplicationReviewId,
+                        CandidateFeedback = m.CandidateFeedback,
+                        User = user
+                    });
                 default:
                     throw new ArgumentException("Unhandled ApplicationReviewStatus");
             }

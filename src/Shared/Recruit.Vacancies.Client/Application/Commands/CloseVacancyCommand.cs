@@ -8,6 +8,6 @@ namespace Esfa.Recruit.Vacancies.Client.Application.Commands
     public class CloseVacancyCommand : ICommand, IRequest
     {
         public Guid VacancyId { get; set; }
-        public VacancyUser User { get; internal set; }
+        public VacancyUser User { get; set; }
     }
 }

@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
 using Esfa.Recruit.Vacancies.Client.Domain.Events;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Services.Projections;
 using Microsoft.Extensions.Logging;
@@ -13,12 +15,18 @@ namespace Esfa.Recruit.Vacancies.Jobs.DomainEvents.Handlers.Employer
         private readonly ILogger<SetupEmployerHandler> _logger;
         private readonly IJobsVacancyClient _client;
         private readonly IEditVacancyInfoProjectionService _projectionService;
+        private readonly IMessaging _messaging;
 
-        public SetupEmployerHandler(ILogger<SetupEmployerHandler> logger, IJobsVacancyClient client, IEditVacancyInfoProjectionService projectionService) : base(logger)
+        public SetupEmployerHandler(
+            ILogger<SetupEmployerHandler> logger, 
+            IJobsVacancyClient client, 
+            IEditVacancyInfoProjectionService projectionService,
+            IMessaging messaging) : base(logger)
         {
             _logger = logger;
             _client = client;
             _projectionService = projectionService;
+            _messaging = messaging;
         }
 
         public async Task HandleAsync(string eventPayload)
@@ -33,7 +41,11 @@ namespace Esfa.Recruit.Vacancies.Jobs.DomainEvents.Handlers.Employer
 
                 var vacancyDataTask =  _projectionService.UpdateEmployerVacancyDataAsync(@event.EmployerAccountId, legalEntities);
 
-                var employerProfilesTask = _client.RefreshEmployerProfiles(@event.EmployerAccountId, legalEntities.Select(x => x.LegalEntityId));
+                var employerProfilesTask = _messaging.SendCommandAsync(new RefreshEmployerProfilesCommand
+                {
+                    EmployerAccountId = @event.EmployerAccountId,
+                    LegalEntityIds = legalEntities.Select(x => x.LegalEntityId)
+                });
 
                 await Task.WhenAll(vacancyDataTask, employerProfilesTask);
 

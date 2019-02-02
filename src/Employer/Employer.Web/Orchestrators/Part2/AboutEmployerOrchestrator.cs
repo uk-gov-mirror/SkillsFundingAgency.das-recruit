@@ -109,7 +109,11 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators.Part2
             if (employerProfile.AboutOrganisation != employerDescription)
             {
                 employerProfile.AboutOrganisation = employerDescription;
-                await _client.UpdateEmployerProfileAsync(employerProfile, user);
+                await _messaging.SendCommandAsync(new UpdateEmployerProfileCommand
+                        {
+                            Profile = employerProfile,
+                            User = user
+                        });
             }
         }
 

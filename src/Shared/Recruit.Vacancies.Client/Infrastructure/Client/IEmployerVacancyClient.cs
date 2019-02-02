@@ -13,7 +13,7 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
     {
         //Task<Guid> CreateVacancyAsync(string title, int numberOfPositions, string employerAccountId, VacancyUser user);
         Task GenerateDashboard(string employerAccountId);
-        Task CloseVacancyAsync(Guid vacancyId, VacancyUser user);
+        //Task CloseVacancyAsync(Guid vacancyId, VacancyUser user);
         //Task<Guid> CloneVacancyAsync(Guid vacancyId, VacancyUser user, SourceOrigin sourceOrigin);
         
         //Task UpdatePublishedVacancyAsync(Vacancy vacancy, VacancyUser user);
@@ -28,13 +28,13 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
         Task<IEnumerable<string>> GetEmployerIdentifiersAsync(string userId);
         //Task SetupEmployerAsync(string employerAccountId);
         Task<EmployerProfile> GetEmployerProfileAsync(string employerAccountId, long legalEntityId);
-        Task UpdateEmployerProfileAsync(EmployerProfile employerProfile, VacancyUser user);
+        //Task UpdateEmployerProfileAsync(EmployerProfile employerProfile, VacancyUser user);
         
         Task<VacancyApplications> GetVacancyApplicationsAsync(string vacancyReference);
-        Task SetApplicationReviewSuccessful(Guid applicationReviewId, VacancyUser user);
-        Task SetApplicationReviewUnsuccessful(Guid applicationReviewId, string candidateFeedback, VacancyUser user);
+        //Task SetApplicationReviewSuccessful(Guid applicationReviewId, VacancyUser user);
+        //Task SetApplicationReviewUnsuccessful(Guid applicationReviewId, string candidateFeedback, VacancyUser user);
         Task<User> GetUsersDetailsAsync(string userId);
-        Task SaveLevyDeclarationAsync(string userId, string employerAccountId);
+        //Task SaveLevyDeclarationAsync(string userId, string employerAccountId);
 
         Task<bool> GetTrainingProviderExistsAsync(long ukprn);
 

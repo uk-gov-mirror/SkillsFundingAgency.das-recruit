@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
 using Esfa.Recruit.Vacancies.Client.Domain.Events;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Microsoft.Extensions.Logging;
 
@@ -10,11 +12,16 @@ namespace Esfa.Recruit.Vacancies.Jobs.DomainEvents.Handlers.Vacancy
     {
         private readonly ILogger<VacancyClonedDomainEventHandler> _logger;
         private readonly IJobsVacancyClient _client;
+        private readonly IMessaging _messaging;
 
-        public VacancyClonedDomainEventHandler(ILogger<VacancyClonedDomainEventHandler> logger, IJobsVacancyClient client) : base(logger)
+        public VacancyClonedDomainEventHandler(
+            ILogger<VacancyClonedDomainEventHandler> logger, 
+            IJobsVacancyClient client,
+            IMessaging messaging) : base(logger)
         {
             _logger = logger;
             _client = client;
+            _messaging = messaging;
         }
 
         public async Task HandleAsync(string eventPayload)
@@ -25,7 +32,10 @@ namespace Esfa.Recruit.Vacancies.Jobs.DomainEvents.Handlers.Vacancy
             {
                 _logger.LogInformation($"Processing {nameof(VacancyClonedEvent)} for vacancy: {{VacancyId}}", @event.VacancyId);
                 
-                await _client.AssignVacancyNumber(@event.VacancyId);
+                await _messaging.SendCommandAsync(new AssignVacancyNumberCommand
+                {
+                    VacancyId = @event.VacancyId
+                });
                 
                 _logger.LogInformation($"Finished Processing {nameof(VacancyClonedEvent)} for vacancy: {{VacancyId}}", @event.VacancyId);
             }

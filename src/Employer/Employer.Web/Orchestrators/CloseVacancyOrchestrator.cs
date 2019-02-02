@@ -7,6 +7,8 @@ using Esfa.Recruit.Employer.Web.RouteModel;
 using Esfa.Recruit.Employer.Web.Models;
 using Esfa.Recruit.Shared.Web.Orchestrators;
 using Esfa.Recruit.Shared.Web.ViewModels;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Employer.Web.Orchestrators
 {
@@ -14,11 +16,16 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
     {
         private readonly IEmployerVacancyClient _client;
         private readonly IRecruitVacancyClient _vacancyClient;
+        private readonly IMessaging _messaging;
 
-        public CloseVacancyOrchestrator(IEmployerVacancyClient client, IRecruitVacancyClient vacancyClient)
+        public CloseVacancyOrchestrator(
+            IEmployerVacancyClient client, 
+            IRecruitVacancyClient vacancyClient,
+            IMessaging messaging)
         {
             _client = client;
             _vacancyClient = vacancyClient;
+            _messaging = messaging;
         }
 
         public async Task<CloseViewModel> GetCloseViewModelAsync(VacancyRouteModel vrm)
@@ -48,7 +55,11 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
             if (!vacancy.CanClose)
                 throw new InvalidStateException(string.Format(ErrorMessages.VacancyNotAvailableForClosing, vacancy.Title));
 
-            await _client.CloseVacancyAsync(vacancy.Id, user);
+            await _messaging.SendCommandAsync(new CloseVacancyCommand
+            {
+                VacancyId = vacancy.Id,
+                User = user
+            });
 
             return new OrchestratorResponse<VacancyInfo>(new VacancyInfo
             {
