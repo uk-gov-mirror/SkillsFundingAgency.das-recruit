@@ -14,6 +14,8 @@ using Esfa.Recruit.Provider.Web.ViewModels.Part1;
 using Esfa.Recruit.Shared.Web.Orchestrators;
 using Esfa.Recruit.Provider.Web.Extensions;
 using System.Linq;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Provider.Web.Orchestrators
 {
@@ -23,14 +25,19 @@ namespace Esfa.Recruit.Provider.Web.Orchestrators
         private readonly IProviderVacancyClient _providerVacancyClient;
         private readonly IRecruitVacancyClient _recruitVacancyClient;
         private readonly IReviewSummaryService _reviewSummaryService;
+        private readonly IMessaging _messaging;
 
-        public TitleOrchestrator(IProviderVacancyClient providerVacancyClient, IRecruitVacancyClient recruitVacancyClient, 
-            ILogger<TitleOrchestrator> logger, IReviewSummaryService reviewSummaryService) : base(logger)
+        public TitleOrchestrator(
+            IProviderVacancyClient providerVacancyClient, 
+            IRecruitVacancyClient recruitVacancyClient, 
+            ILogger<TitleOrchestrator> logger, 
+            IReviewSummaryService reviewSummaryService,
+            IMessaging messaging) : base(logger)
         {
             _providerVacancyClient = providerVacancyClient;
             _recruitVacancyClient = recruitVacancyClient;
             _reviewSummaryService = reviewSummaryService;
-
+            _messaging = messaging;
         }
 
         public TitleViewModel GetTitleViewModelForNewVacancy(string employerAccountId, long ukprn)
@@ -123,8 +130,23 @@ namespace Esfa.Recruit.Provider.Web.Orchestrators
             return await ValidateAndExecute(
                 newVacancy,
                 v => _recruitVacancyClient.Validate(v, ValidationRules),
-                async v => await _providerVacancyClient.CreateVacancyAsync(
-                    model.EmployerAccountId, employerName, ukprn, model.Title, numberOfPositions, user));
+                async v => {
+                    var newVacancyId = Guid.NewGuid();
+                    await _messaging.SendCommandAsync(new CreateProviderOwnedVacancyCommand
+                    {
+                        VacancyId = newVacancyId,
+                        User = user,
+                        UserType = UserType.Provider,
+                        EmployerAccountId = model.EmployerAccountId,
+                        EmployerName = employerName,
+                        Ukprn = ukprn,           
+                        Origin = SourceOrigin.ProviderWeb,
+                        Title = model.Title,
+                        NumberOfPositions = numberOfPositions
+                    });
+
+                    return newVacancyId;
+                });
         }
 
         protected override EntityToViewModelPropertyMappings<Vacancy, TitleEditModel> DefineMappings()

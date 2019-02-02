@@ -10,28 +10,28 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
 {
     public partial class VacancyClient : IProviderVacancyClient
     {              
-        public async Task<Guid> CreateVacancyAsync(string employerAccountId, string employerName,
-            long ukprn, string title, int numberOfPositions, VacancyUser user)
-        {
-            var vacancyId = GenerateVacancyId();
+        // public async Task<Guid> CreateVacancyAsync(string employerAccountId, string employerName,
+        //     long ukprn, string title, int numberOfPositions, VacancyUser user)
+        // {
+        //     var vacancyId = GenerateVacancyId();
 
-            var command = new CreateProviderOwnedVacancyCommand
-            {
-                VacancyId = vacancyId,
-                User = user,
-                UserType = UserType.Provider,
-                EmployerAccountId = employerAccountId,
-                EmployerName = employerName,
-                Ukprn = ukprn,           
-                Origin = SourceOrigin.ProviderWeb,
-                Title = title,
-                NumberOfPositions = numberOfPositions
-            };
+        //     var command = new CreateProviderOwnedVacancyCommand
+        //     {
+        //         VacancyId = vacancyId,
+        //         User = user,
+        //         UserType = UserType.Provider,
+        //         EmployerAccountId = employerAccountId,
+        //         EmployerName = employerName,
+        //         Ukprn = ukprn,           
+        //         Origin = SourceOrigin.ProviderWeb,
+        //         Title = title,
+        //         NumberOfPositions = numberOfPositions
+        //     };
 
-            await _messaging.SendCommandAsync(command);
+        //     await _messaging.SendCommandAsync(command);
 
-            return vacancyId;
-        }
+        //     return vacancyId;
+        // }
 
         public Task<ProviderDashboard> GetDashboardAsync(long ukprn)
         {
@@ -53,11 +53,11 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
             return _reader.GetProviderEmployerVacancyDataAsync(ukprn, employerAccountId);
         }
 
-        public Task SetupProviderAsync(long ukprn)
-        {
-            var command = new SetupProviderCommand(ukprn);
+        // public Task SetupProviderAsync(long ukprn)
+        // {
+        //     var command = new SetupProviderCommand(ukprn);
 
-            return _messaging.SendCommandAsync(command);
-        }
+        //     return _messaging.SendCommandAsync(command);
+        // }
     }
 }

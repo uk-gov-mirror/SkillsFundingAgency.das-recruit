@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Esfa.Recruit.Provider.Web.Configuration;
 using Esfa.Recruit.Provider.Web.Configuration.Routing;
 using Esfa.Recruit.Provider.Web.Extensions;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -16,11 +18,16 @@ namespace Esfa.Recruit.Provider.Web.Middleware
     {
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IProviderVacancyClient _client;
+        private readonly IMessaging _messaging;
 
-        public ProviderAccountHandler(IHostingEnvironment hostingEnvironment, IProviderVacancyClient client)
+        public ProviderAccountHandler(
+            IHostingEnvironment hostingEnvironment, 
+            IProviderVacancyClient client,
+            IMessaging messaging)
         {
             _hostingEnvironment = hostingEnvironment;
             _client = client;
+            _messaging = messaging;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ProviderAccountRequirement requirement)
@@ -54,7 +61,7 @@ namespace Esfa.Recruit.Provider.Web.Middleware
 
             if (context.Request.Cookies[key] == null)
             {
-                await _client.SetupProviderAsync(ukprn);
+                await _messaging.SendCommandAsync(new SetupProviderCommand(ukprn));
                 context.Response.Cookies.Append(key, "1", EsfaCookieOptions.GetDefaultHttpCookieOption(_hostingEnvironment));
             }
         }
