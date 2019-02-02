@@ -10,6 +10,8 @@ using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.QueryStore.Projections.QA;
 using Esfa.Recruit.Vacancies.Client.Domain.Extensions;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 
 namespace Esfa.Recruit.Qa.Web.Orchestrators
 {
@@ -18,13 +20,18 @@ namespace Esfa.Recruit.Qa.Web.Orchestrators
         private readonly IQaVacancyClient _vacancyClient;
         private readonly ITimeProvider _timeProvider;
         private readonly UserAuthorizationService _userAuthorizationService;
+        private readonly IMessaging _messaging;
 
         public DashboardOrchestrator(
-            IQaVacancyClient vacancyClient, ITimeProvider timeProvider, UserAuthorizationService userAuthorizationService)
+            IQaVacancyClient vacancyClient, 
+            ITimeProvider timeProvider, 
+            UserAuthorizationService userAuthorizationService,
+            IMessaging messaging)
         {
             _vacancyClient = vacancyClient;
             _timeProvider = timeProvider;
             _userAuthorizationService = userAuthorizationService;
+            _messaging = messaging;
         }
 
         public async Task<DashboardViewModel> GetDashboardViewModelAsync(string searchTerm, ClaimsPrincipal user)
@@ -71,7 +78,10 @@ namespace Esfa.Recruit.Qa.Web.Orchestrators
 
         public async Task<Guid?> AssignNextVacancyReviewAsync(VacancyUser user)
         {
-            await _vacancyClient.AssignNextVacancyReviewAsync(user);
+            await _messaging.SendCommandAsync(new AssignVacancyReviewCommand
+            {
+                User = user
+            });
 
             var userVacancyReviews = await _vacancyClient.GetAssignedVacancyReviewsForUserAsync(user.UserId);
 

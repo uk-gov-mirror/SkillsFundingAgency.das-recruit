@@ -4,8 +4,10 @@ using System.Threading.Tasks;
 using Esfa.Recruit.Qa.Web.Exceptions;
 using Esfa.Recruit.Qa.Web.Mappings;
 using Esfa.Recruit.Qa.Web.ViewModels;
+using Esfa.Recruit.Vacancies.Client.Application.Commands;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 using Esfa.Recruit.Vacancies.Client.Domain.Exceptions;
+using Esfa.Recruit.Vacancies.Client.Domain.Messaging;
 using Esfa.Recruit.Vacancies.Client.Infrastructure.Client;
 using UnassignedVacancyReviewException = Esfa.Recruit.Qa.Web.Exceptions.UnassignedVacancyReviewException;
 
@@ -15,9 +17,11 @@ namespace Esfa.Recruit.Qa.Web.Orchestrators
     {
         private readonly IQaVacancyClient _vacancyClient;
         private readonly ReviewMapper _mapper;
+        private readonly IMessaging _messaging;
 
-        public ReviewOrchestrator(IQaVacancyClient vacancyClient, ReviewMapper mapper)
+        public ReviewOrchestrator(IQaVacancyClient vacancyClient, ReviewMapper mapper, IMessaging messaging)
         {
+            _messaging = messaging;
             _vacancyClient = vacancyClient;
             _mapper = mapper;
         }
@@ -32,11 +36,23 @@ namespace Esfa.Recruit.Qa.Web.Orchestrators
 
             if (m.IsRefer)
             {
-                await _vacancyClient.ReferVacancyReviewAsync(m.ReviewId, m.ReviewerComment, manualQaFieldIndicators, selectedAutomatedQaRuleOutcomeIds);
+                await _messaging.SendCommandAsync(new ReferVacancyReviewCommand
+                {
+                    ReviewId = m.ReviewId,
+                    ManualQaComment = m.ReviewerComment,
+                    ManualQaFieldIndicators = manualQaFieldIndicators,
+                    SelectedAutomatedQaRuleOutcomeIds = selectedAutomatedQaRuleOutcomeIds
+                });
             }
             else
             {
-                await _vacancyClient.ApproveVacancyReviewAsync(m.ReviewId, m.ReviewerComment, manualQaFieldIndicators, selectedAutomatedQaRuleOutcomeIds);
+                await _messaging.SendCommandAsync(new ApproveVacancyReviewCommand
+                {
+                    ReviewId = m.ReviewId,
+                    ManualQaComment = m.ReviewerComment,
+                    ManualQaFieldIndicators = manualQaFieldIndicators,
+                    SelectedAutomatedQaRuleOutcomeIds = selectedAutomatedQaRuleOutcomeIds
+                });
             }
 
             var nextVacancyReviewId = await AssignNextVacancyReviewAsync(user);
@@ -55,7 +71,12 @@ namespace Esfa.Recruit.Qa.Web.Orchestrators
 
             if (_vacancyClient.VacancyReviewCanBeAssigned(review))
             {
-                await _vacancyClient.AssignVacancyReviewAsync(user, review.Id);
+                await _messaging.SendCommandAsync(new AssignVacancyReviewCommand
+                {
+                    User = user,
+                    ReviewId = reviewId
+                });
+
                 review = await _vacancyClient.GetVacancyReviewAsync(reviewId);
             }
 
@@ -110,13 +131,17 @@ namespace Esfa.Recruit.Qa.Web.Orchestrators
         {
             var userReviews = await _vacancyClient.GetAssignedVacancyReviewsForUserAsync(userId);
 
-            if(userReviews.Any(r => r.Id == review.Id) == false)
+            if (userReviews.Any(r => r.Id == review.Id) == false)
                 throw new UnassignedVacancyReviewException($"You have been unassigned from {review.VacancyReference}");
         }
 
         public async Task<Guid?> AssignNextVacancyReviewAsync(VacancyUser user)
         {
-            await _vacancyClient.AssignNextVacancyReviewAsync(user);
+            await _messaging.SendCommandAsync(new AssignVacancyReviewCommand
+            {
+                User = user
+            });
+
 
             var userVacancyReviews = await _vacancyClient.GetAssignedVacancyReviewsForUserAsync(user.UserId);
 
@@ -136,7 +161,7 @@ namespace Esfa.Recruit.Qa.Web.Orchestrators
 
         public Task UnassignVacancyReviewAsync(Guid reviewId)
         {
-            return _vacancyClient.UnassignVacancyReviewAsync(reviewId);
+            return _messaging.SendCommandAsync(new UnassignVacancyReviewCommand { ReviewId = reviewId });
         }
     }
 }
