@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using Esfa.Recruit.Vacancies.Client.Application.Providers;
 using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Esfa.Recruit.Vacancies.Client.Application.CommandHandlers
 {
-    public class CreateProviderOwnedVacancyCommandHandler: IRequestHandler<CreateProviderOwnedVacancyCommand>
+    public class CreateProviderOwnedVacancyCommandHandler: IRequestHandler<CreateProviderOwnedVacancyCommand, Guid>
     {
         private readonly ILogger<CreateProviderOwnedVacancyCommandHandler> _logger;
         private readonly IVacancyRepository _repository;
@@ -30,15 +31,16 @@ namespace Esfa.Recruit.Vacancies.Client.Application.CommandHandlers
             _timeProvider = timeProvider;
         }
 
-        public async Task Handle(CreateProviderOwnedVacancyCommand message, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(CreateProviderOwnedVacancyCommand message, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Creating vacancy with id {vacancyId}.", message.VacancyId);
-
             var now = _timeProvider.Now;
+            var newVacancyId = Guid.NewGuid();
+
+            _logger.LogInformation("Creating vacancy with id {vacancyId}.", newVacancyId);
 
             var vacancy = new Vacancy
             {
-                Id = message.VacancyId,
+                Id = newVacancyId,
                 OwnerType = message.UserType == UserType.Provider ? OwnerType.Provider : OwnerType.Employer,
                 SourceOrigin = message.Origin,
                 SourceType = SourceType.New,
@@ -61,6 +63,8 @@ namespace Esfa.Recruit.Vacancies.Client.Application.CommandHandlers
             {
                 VacancyId = vacancy.Id
             });
+
+            return newVacancyId;
         }
     }
 }

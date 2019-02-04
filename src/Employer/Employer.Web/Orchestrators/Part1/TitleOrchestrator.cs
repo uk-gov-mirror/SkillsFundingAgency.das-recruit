@@ -104,22 +104,15 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
                 return await ValidateAndExecute(
                     newVacancy, 
                     v => _vacancyClient.Validate(v, ValidationRules),
-                    async v => 
-                                { 
-                                    var newVacancyId = Guid.NewGuid(); //TODO:  Move into Handler
-
-                                    await _messaging.SendCommandAsync(new CreateEmployerOwnedVacancyCommand
-                                                {
-                                                    VacancyId = newVacancyId, 
-                                                    User = user,
-                                                    UserType = UserType.Employer,
-                                                    Title = m.Title,
-                                                    NumberOfPositions = numberOfPositions.Value,
-                                                    EmployerAccountId = m.EmployerAccountId,
-                                                    Origin = SourceOrigin.EmployerWeb
-                                                });
-                                    return newVacancyId;
-                                }
+                    async v => await _messaging.SendCommandAsync(new CreateEmployerOwnedVacancyCommand
+                                {
+                                    User = user,
+                                    UserType = UserType.Employer,
+                                    Title = m.Title,
+                                    NumberOfPositions = numberOfPositions.Value,
+                                    EmployerAccountId = m.EmployerAccountId,
+                                    Origin = SourceOrigin.EmployerWeb
+                                })
                 );
             }
 

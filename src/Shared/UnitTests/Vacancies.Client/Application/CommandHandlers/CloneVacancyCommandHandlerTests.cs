@@ -44,7 +44,7 @@ namespace Esfa.Recruit.UnitTests.Vacancies.Client.Application.CommandHandlers
 
             var user = new VacancyUser { Name = "Test", Email = "test@test.com", UserId = "123" };
             
-            var command = new CloneVacancyCommand(cloneVacancyId: existingVacancy.Id, newVacancyId: newVacancyId, user: user, sourceOrigin: SourceOrigin.EmployerWeb);
+            var command = new CloneVacancyCommand(cloneVacancyId: existingVacancy.Id, user: user, sourceOrigin: SourceOrigin.EmployerWeb);
 
             await handler.Handle(command, new CancellationToken());
 
@@ -56,7 +56,7 @@ namespace Esfa.Recruit.UnitTests.Vacancies.Client.Application.CommandHandlers
         private static void AssertUpdatedProperties(Vacancy existingVacancy, DateTime currentTime, Vacancy clone, CloneVacancyCommand command)
         {
             // Check properties that should have been updated to new values to the original
-            clone.Id.Should().Be(command.NewVacancyId, "{0} should be updated", nameof(clone.Id));
+            clone.Id.Should().NotBe(existingVacancy.Id, "{0} should be updated", nameof(clone.Id));
             clone.CreatedByUser.Should().BeEquivalentTo(command.User, "{0} should be updated", nameof(clone.CreatedByUser));
             clone.CreatedDate.Should().Be(currentTime, "{0} should be updated", nameof(clone.CreatedDate));
             clone.LastUpdatedByUser.Should().Be(command.User, "{0} should be updated", nameof(clone.LastUpdatedByUser));

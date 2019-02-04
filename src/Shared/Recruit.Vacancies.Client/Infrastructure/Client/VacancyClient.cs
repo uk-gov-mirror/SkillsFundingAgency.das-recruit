@@ -138,10 +138,10 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Client
         //     return newVacancyId;
         // }
         
-        private Guid GenerateVacancyId()
-        {
-            return Guid.NewGuid();
-        }
+        // private Guid GenerateVacancyId()
+        // {
+        //     return Guid.NewGuid();
+        // }
 
         // public Task SubmitVacancyAsync(Guid vacancyId, string employerDescription, VacancyUser user)
         // {

@@ -20,6 +20,13 @@ namespace Esfa.Recruit.Vacancies.Client.Infrastructure.Messaging
             await _mediator.Send(request);
         }
 
+        public Task<T> SendCommandAsync<T>(ICommand<T> command)
+        {
+            var request = command as IRequest<T>;
+
+            return _mediator.Send(request);
+        }
+
         public async Task PublishEvent(IEvent @event)
         {
             var notification = @event as INotification;

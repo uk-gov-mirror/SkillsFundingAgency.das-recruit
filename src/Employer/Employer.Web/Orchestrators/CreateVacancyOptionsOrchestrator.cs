@@ -43,11 +43,7 @@ namespace Esfa.Recruit.Employer.Web.Orchestrators
 
             Utility.CheckAuthorisedAccess(vacancy, employerAccountId);
 
-            var clonedVacancyId = Guid.NewGuid();
-            
-            await _messaging.SendCommandAsync(new CloneVacancyCommand(cloneVacancyId: vacancyId, newVacancyId: clonedVacancyId, user: user, sourceOrigin: SourceOrigin.EmployerWeb));
-
-            return clonedVacancyId;
+            return await _messaging.SendCommandAsync(new CloneVacancyCommand(cloneVacancyId: vacancyId, user: user, sourceOrigin: SourceOrigin.EmployerWeb));
         }
 
         private static CreateVacancyOptionsViewModel MapFromDashboard(EmployerDashboard dashboard)

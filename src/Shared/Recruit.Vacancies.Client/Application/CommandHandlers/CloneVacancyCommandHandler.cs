@@ -10,10 +10,11 @@ using Esfa.Recruit.Vacancies.Client.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Esfa.Recruit.Vacancies.Client.Domain.Exceptions;
+using System;
 
 namespace Esfa.Recruit.Vacancies.Client.Application.CommandHandlers
 {
-    public class CloneVacancyCommandHandler: IRequestHandler<CloneVacancyCommand>
+    public class CloneVacancyCommandHandler: IRequestHandler<CloneVacancyCommand, Guid>
     {
         private readonly ILogger<CloneVacancyCommandHandler> _logger;
         private readonly IVacancyRepository _repository;
@@ -32,9 +33,11 @@ namespace Esfa.Recruit.Vacancies.Client.Application.CommandHandlers
             _timeProvider = timeProvider;
         }
 
-        public async Task Handle(CloneVacancyCommand message, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(CloneVacancyCommand message, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Cloning new vacancy with id: {vacancyId} from vacancy with id: {clonedVacancyId}", message.IdOfVacancyToClone, message.NewVacancyId);
+            var newVacancyId = Guid.NewGuid();
+
+            _logger.LogInformation("Cloning new vacancy with id: {vacancyId} from vacancy with id: {clonedVacancyId}", message.IdOfVacancyToClone, newVacancyId);
 
             var vacancy = await _repository.GetVacancyAsync(message.IdOfVacancyToClone);
 
@@ -45,7 +48,7 @@ namespace Esfa.Recruit.Vacancies.Client.Application.CommandHandlers
                 throw new InvalidStateException($"Vacancy is not in correct state to be cloned. Current State: {vacancy.Status}");
             }
 
-            var clone = CreateClone(message, vacancy);
+            var clone = CreateClone(newVacancyId, message, vacancy);
 
             await _repository.CreateAsync(clone);
 
@@ -53,16 +56,18 @@ namespace Esfa.Recruit.Vacancies.Client.Application.CommandHandlers
             {
                 VacancyId = clone.Id
             });
+
+            return newVacancyId;
         }
 
-        private Vacancy CreateClone(CloneVacancyCommand message, Vacancy vacancy)
+        private Vacancy CreateClone(Guid newVacancyId, CloneVacancyCommand message, Vacancy vacancy)
         {
             var now = _timeProvider.Now;
 
             var clone = JsonConvert.DeserializeObject<Vacancy>(JsonConvert.SerializeObject(vacancy));
 
             // Properties to replace
-            clone.Id = message.NewVacancyId;
+            clone.Id = newVacancyId;
             clone.CreatedByUser = message.User;
             clone.CreatedDate = now;
             clone.LastUpdatedByUser = message.User;
