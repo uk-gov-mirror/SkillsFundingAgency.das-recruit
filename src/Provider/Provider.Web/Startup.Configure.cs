@@ -42,21 +42,30 @@ namespace Esfa.Recruit.Provider.Web
             app.UseCsp(options => options
                 .DefaultSources(s => s.Self())
                 .StyleSources(s => 
+                {
                     s.Self()
+                    .CustomSources("https://www.googletagmanager.com/",
+                                    "https://www.tagmanager.google.com/",
+                                    "https://tagmanager.google.com/",
+                                    "https://fonts.googleapis.com/",
+                                    "https://das-at-frnt-end.azureedge.net/");
                     //TinyMCE uses inline styles
-                    .UnsafeInline()
-                )
+                    s.UnsafeInline();
+                })
+
                 .ScriptSources(s => 
                     s.Self()
                     .CustomSources("https://az416426.vo.msecnd.net/scripts/a/ai.0.js",
                                     "https://www.google-analytics.com/analytics.js", 
                                     "https://www.googletagmanager.com/",
                                     "https://www.tagmanager.google.com/", 
-                                    "https://services.postcodeanywhere.co.uk/")
+                                    "https://services.postcodeanywhere.co.uk/",
+                                    "https://das-at-frnt-end.azureedge.net/")
                 )
                 .FontSources(s => 
                     s.Self()
-                    .CustomSources("data:")
+                    .CustomSources("https://das-at-frnt-end.azureedge.net/",
+                                    "data:")
                 )
                 .ConnectSources(s => 
                     s.Self()
@@ -65,7 +74,8 @@ namespace Esfa.Recruit.Provider.Web
                 .ImageSources(s => 
                     s.Self()
                     .CustomSources("https://maps.googleapis.com", 
-                                    "https://www.google-analytics.com", 
+                                    "https://www.google-analytics.com",
+                                    "https://das-at-frnt-end.azureedge.net/",
                                     "data:")
                  )
                 .ReportUris(r => r.Uris("/ContentPolicyReport/Report")));
