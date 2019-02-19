@@ -61,6 +61,11 @@
         "CommitmentsSiteUrl": ""
       }
     },
+    "cdn": {
+      "value": {
+        "url": ""
+      }
+    },
     "Features": {
       "value": {
         "AllowThroughFaaApplicationMethod": false

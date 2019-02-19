@@ -84,6 +84,10 @@
         "ProviderCommitmentsSiteUrl": ""
       }
     },
+    "cdnUrl": {
+      "type": "string",
+      "defaultValue": "https://das-prd-frnt-end.azureedge.net"
+    },
     "Features": {
       "type": "object",
       "defaultValue": {
@@ -398,6 +402,10 @@
                 "value": "[parameters('ExternalLinks').CommitmentsSiteUrl]"
               },
               {
+                "name": "cdn:url",
+                "value": "[parameters('cdnUrl')]"
+              },
+              {
                 "name": "Features:AllowThroughFaaApplicationMethod",
                 "value": "[parameters('Features').AllowThroughFaaApplicationMethod]"
               },
@@ -536,6 +544,10 @@
                 "value": "[parameters('ExternalLinks').StaffIdamsUrl]"
               },
               {
+                "name": "cdn:url",
+                "value": "[parameters('cdnUrl')]"
+              },
+              {
                 "name": "VacancyReviewAssignationTimeoutMinutes",
                 "value": "[parameters('VacancyReviewAssignationTimeoutMinutes')]"
               },
@@ -637,8 +649,8 @@
                 "value": "[parameters('ExternalLinks').ProviderApprenticeshipSiteUrl]"
               },
               {
-                "name": "ExternalLinks:CommitmentsSiteUrl",
-                "value": "[parameters('ExternalLinks').ProviderCommitmentsSiteUrl]"
+                "name": "cdn:url",
+                "value": "[parameters('cdnUrl')]"
               },
               {
                 "name": "ASPNETCORE_ENVIRONMENT",
