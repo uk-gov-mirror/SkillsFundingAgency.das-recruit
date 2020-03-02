@@ -234,7 +234,7 @@
       "defaultValue": ""
     },
     "DasEncodings": {
-      "type": "secureobject"
+      "type": "securestring"
     },
     "cosmosDatabase": {
       "type": "string"
@@ -1221,7 +1221,7 @@
               },
               {
                 "name": "Encodings",
-                "value": "[string(parameters('DasEncodings').Array)]"
+                "value": "[parameters('DasEncodings')]"
               }
             ]
           },
