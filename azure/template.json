@@ -1221,7 +1221,7 @@
               },
               {
                 "name": "Encodings",
-                "value": "[string(parameters('DasEncodings').Array)]"
+                "value": "[parameters('DasEncodings')]"
               }
             ]
           },
