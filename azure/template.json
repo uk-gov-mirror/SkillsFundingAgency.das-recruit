@@ -234,7 +234,7 @@
       "defaultValue": ""
     },
     "DasEncodings": {
-      "type": "array"
+      "type": "string"
     },
     "cosmosDatabase": {
       "type": "string"
