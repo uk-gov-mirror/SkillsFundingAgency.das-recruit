@@ -11,7 +11,7 @@ namespace Esfa.Recruit.Employer.Web.Extensions
 {
     public static class HtmlHelperExtensions
     {
-        public static IHeaderViewModel GetHeaderViewModel(this IHtmlHelper html, bool hideMenu = false)
+        public static IHeaderViewModel GetHeaderViewModel(this IHtmlHelper html, bool hideMenu = false, bool useLegacyStyles = false)
         {   
             var externalLinks = (html.ViewContext.HttpContext.RequestServices.GetService(typeof(IOptions<ExternalLinksConfiguration>)) as IOptions<ExternalLinksConfiguration>).Value;
             var authConfig = (html.ViewContext.HttpContext.RequestServices.GetService(typeof(IOptions<AuthenticationConfiguration>)) as IOptions<AuthenticationConfiguration>).Value;
@@ -35,7 +35,9 @@ namespace Esfa.Recruit.Employer.Web.Extensions
             {
                 User = html.ViewContext.HttpContext.User,
                 HashedAccountId = html.ViewContext.RouteData.Values["employerAccountId"]?.ToString()
-            });
+            },
+            useLegacyStyles: useLegacyStyles
+            );
             
             headerModel.SelectMenu("recruitment");
 
