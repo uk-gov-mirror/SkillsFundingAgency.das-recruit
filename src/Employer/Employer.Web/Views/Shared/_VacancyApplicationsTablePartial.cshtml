@@ -1,30 +1,55 @@
-@using Esfa.Recruit.Employer.Web.ViewModels.VacancyManage
-@model VacancyApplicationsViewModel
+@model Esfa.Recruit.Employer.Web.ViewModels.VacancyView.VacancyApplicationsViewModel
+
 <section id="applications">
     <table class="govuk-table responsive">
         <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-                <partial name="@PartialNames.MultipleApplicationsTableHeader" />
-            </tr>
+        <tr class="govuk-table__row">
+            <partial name="@PartialNames.MultipleApplicationsTableHeader" />
+        </tr>
         </thead>
         <tbody class="govuk-table__body">
-            @foreach (var application in Model.Applications)
-            {
-                <tr class="govuk-table__row" asp-show="@application.IsNotWithdrawn">
-                    <td class="govuk-table__cell" data-label="Application ID">
-                        <a data-label="application_review" asp-route="@RouteNames.ApplicationReview_Get" asp-route-employerAccountId="@Model.EmployerAccountId" asp-route-vacancyId="@Model.VacancyId" asp-route-applicationReviewId="@application.ApplicationReviewId" class="govuk-link">@application.GetFriendlyId()</a>
-                    </td>
-                    <td class="govuk-table__cell" data-label="Name">@application.CandidateName</td>
-                    <td class="govuk-table__cell" data-label="Status"><strong class="@application.Status.GetCssClassForApplicationReviewStatusForEmployer()">@application.Status.GetDisplayName(Model.UserType)</strong></td>
-                    <td class="govuk-table__cell" data-label="Date applied">@application.SubmittedDate.AsGdsDate()</td>
-                </tr>
-                <tr class="govuk-table__row" asp-show="@application.IsWithdrawn">
-                    <td class="govuk-table__cell" data-label="Application ID">@application.GetFriendlyId()</td>
-                    <td class="govuk-table__cell" data-label="Name">Application withdrawn by candidate</td>
-                    <td class="govuk-table__cell" data-label="Status"><strong class="@application.Status.GetCssClassForApplicationReviewStatusForEmployer()">Withdrawn</strong></td>
-                    <td class="govuk-table__cell" data-label="Date applied">@application.SubmittedDate.AsGdsDate()</td>
-                </tr>
-            }
+        @foreach (var application in Model.Applications)
+        {
+            <tr class="govuk-table__row" asp-show="@application.IsNotWithdrawn">
+                <td class="govuk-table__cell" data-label="Application ID">
+                    <a data-label="application_review" asp-route="@RouteNames.ApplicationReview_Get" asp-route-employerAccountId="@Model.EmployerAccountId" asp-route-vacancyId="@Model.VacancyId" asp-route-applicationReviewId="@application.ApplicationReviewId" class="govuk-link">@application.GetFriendlyId()</a>
+                </td>
+                <td class="govuk-table__cell" data-label="Name">@application.CandidateName</td>
+                <td class="govuk-table__cell" data-label="Status"><strong class="@application.Status.GetCssClassForApplicationReviewStatusForEmployer()">@application.Status.GetDisplayName(Model.UserType)</strong></td>
+                <td class="govuk-table__cell" data-label="Date applied">@application.SubmittedDate.AsGdsDate()</td>
+            </tr>
+            <tr class="govuk-table__row" asp-show="@application.IsWithdrawn">
+                <td class="govuk-table__cell" data-label="Application ID">@application.GetFriendlyId()</td>
+                <td class="govuk-table__cell" data-label="Name">Application withdrawn by candidate</td>
+                <td class="govuk-table__cell" data-label="Status"><strong class="@application.Status.GetCssClassForApplicationReviewStatusForEmployer()">Withdrawn</strong></td>
+                <td class="govuk-table__cell" data-label="Date applied">@application.SubmittedDate.AsGdsDate()</td>
+            </tr>
+        }
         </tbody>
     </table>
+    <nav role="navigation" aria-label="Pagination" asp-show="@Model.Pager.ShowPager" >
+        <div class="das-pagination__summary">
+            @Model.Pager.Caption
+        </div>
+        <ul class="das-pagination">
+            <li class="das-pagination__item" asp-show="@Model.Pager.ShowPrevious">
+                <a class="das-pagination__link" asp-route="@Model.Pager.RouteName" asp-all-route-data="@Model.Pager.PreviousPageRouteData" aria-label="Previous page" asp-fragment="applications">Previous</a>
+            </li>
+            @for (var pageIndex = 1; pageIndex <= Model.Pager.TotalPages; pageIndex++)
+            {
+                <li class="das-pagination__item">
+                    @if (pageIndex == Model.Pager.CurrentPage) {
+                        <a class="das-pagination__link current" asp-route="@Model.Pager.RouteName" asp-all-route-data="@Model.Pager.GetRouteData(pageIndex)" aria-current="true" aria-label="Page @pageIndex, current page" asp-fragment="applications">@pageIndex</a>
+                    }
+                    else
+                    {
+                        <a class="das-pagination__link" asp-route="@Model.Pager.RouteName" asp-all-route-data="@Model.Pager.GetRouteData(pageIndex)" aria-label="Page @pageIndex" asp-fragment="applications">@pageIndex</a>
+                    }
+                </li>
+            }
+            <li class="das-pagination__item" asp-show="@Model.Pager.ShowNext">
+                <a class="das-pagination__link"  asp-route="@Model.Pager.RouteName" asp-all-route-data="@Model.Pager.NextPageRouteData" aria-label="Next page" asp-fragment="applications">Next</a>
+            </li>
+        </ul>
+    </nav>
 </section>

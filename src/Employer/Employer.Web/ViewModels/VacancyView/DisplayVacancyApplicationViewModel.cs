@@ -1,12 +1,10 @@
 ﻿using System.Linq;
-using Esfa.Recruit.Employer.Web.ViewModels.VacancyManage;
 
-namespace Esfa.Recruit.Employer.Web.ViewModels
+namespace Esfa.Recruit.Employer.Web.ViewModels.VacancyView;
+
+public abstract class DisplayVacancyApplicationViewModel : DisplayVacancyViewModel
 {
-    public abstract class DisplayVacancyApplicationViewModel : DisplayVacancyViewModel
-    {
-        public VacancyApplicationsViewModel Applications { get; internal set; }
+    public VacancyApplicationsViewModel Applications { get; internal set; }
         
-        public bool HasApplications => Applications.Applications.Any();
-    }
+    public bool HasApplications => Applications.Applications.Any();
 }
