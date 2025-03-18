@@ -23,7 +23,7 @@ public class VacancyManageController(
     IWebHostEnvironment hostingEnvironment,
     IUtility utility) : Controller
 {
-    private const int PageSize = 1;
+    private const int PageSize = 20;
     
     [HttpGet("manage", Name = RouteNames.VacancyManage_Get)]
     public async Task<IActionResult> ManageVacancy(
